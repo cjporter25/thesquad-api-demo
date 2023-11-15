@@ -1,0 +1,112 @@
+***Initial Setup***
+    - Create folder (workspace) and name it the intended name of the project
+        - "thesquad-api"
+    - Used Visual Studio Code to create a Python environment
+        - Top action bar
+        - "Show and Run Commands" or ctrl+shift+p
+        - "Python: Create Environment..."
+        - "Venv"
+        - "Python 3.11.4"
+        - There is now a .venv folder containing the python interpreter and
+          any installed packages.
+***Activating the Virtual Environment in the Future***
+    - c:/Users/Christopher Porter/Desktop/thesquad-api/.venv/Scripts/Activate.ps1
+***Installed Flask and Requests Module into This Virtual Environment***
+    - "python -m pip install Flask"
+    - "pip install requests"
+***Listing all Currently Installed Packages***
+    - "pip list" 
+***Creating the Primary API Python File***
+    - While in the main directory, I created a python file called
+      "thesquadapi.py"
+    - Import the Necessary Packages at the top of the App
+        - "import json"
+        - "import os
+        - "import requests"
+        - "from datetime import datetime"
+        - "from flask import Flask, request, jsonify"
+    - Write in the Minimally Necessary Elements
+        thesquadapi = Flask(__name__)
+
+        @thesquadapi.route("/")
+        def home():
+            return "[placeholder_text]"
+
+        if __name__ == "__main__":
+            thesquadapi.run(debug=False) # Make sure to turn to false when deploying
+***Preparing the Deploying Phase for Heroku***
+    - "pip install Gunicorn"            --> Aids in the background packaging process
+    - "pip freeze > requirements.txt"   --> Necessary text file to tell Heroku what
+                                            packages to install during deployment
+    - Create a runtime.txt file         --> Tells Heroku what version of Python. Typed
+                                            in "python-3.11.4"
+    - Create a file called Procfile     --> Tells Heroku what kind of app this is and
+                                            directs it to the correct python file.
+                                            Added "web: gunicorn app:thesquadapi --log-file=-"
+    - Install the Heroku CLI            --> "npm install -g heroku"
+
+***Beginning the Deployment Phase***
+    - Login to the Heroku CLI           --> "heroku login"
+    - Change the Heroku Config          --> "heroku config:set WEB_CONCURRENCY=3"
+    - Create an App in Heroku           --> Made an app called "thesquad-api"
+
+***Initialize a Git Repository with Heroku***
+    - Create a .gitignore file          --> Ignore unnecessary files (like pychache)
+    - Initialize a Local Git Repo       --> "git init ."
+    - Add all not yet added files       --> "git add ."
+    - Establish an initial commit       --> "git commit -m "[message]"
+    - Add Repo to remote Heroku One     --> "heroku git:remote -a thesquad-api"
+    - Push the loaded Commit to Heroku  --> "git push heroku master"
+
+
+***PROCESS USED TO ENCRYPT AND DECRIPT***
+
+    new_key1 = ""
+    curr_val = 0
+    new_val = 0
+    new_char = ''
+    new_line_present = False
+    for char in fb_priv_key:
+        if new_line_present == True:
+            new_line_present = False
+            continue
+        curr_val = ord(char)
+        new_val = curr_val + 1
+        if curr_val == 92:
+            new_val = 42
+            new_char = chr(new_val)
+            new_key1 += new_char
+            new_line_present = True
+            continue
+        if curr_val == 90:  # If current char is "Z" set it too "+"
+            new_val = 43
+        if curr_val == 122:  # If current char is "z" set it too "-"
+            new_val = 45
+        new_char = chr(new_val)
+        new_key1 += new_char
+    
+    new_key2 = ""
+    for char in new_key1:
+        curr_val = ord(char)
+        if curr_val == 42:
+            new_val = 10
+            new_char = chr(new_val)
+            new_key2 += new_char
+            continue
+        if curr_val == 43:
+            new_val = 90
+            new_char = chr(new_val)
+            new_key2 += new_char
+            continue
+        if curr_val == 45:
+            new_val = 122
+            new_char = chr(new_val)
+            new_key2 += new_char
+            continue
+        new_val = curr_val - 1
+        new_char = chr(new_val)
+        new_key2 += new_char
+    
+        
+        
+    
