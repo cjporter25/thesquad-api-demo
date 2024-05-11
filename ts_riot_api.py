@@ -4,21 +4,48 @@ from threading import Event
 # Member Info Gathering: Requests player account information via a provided
 #   summoner name (if valid). This data is then manually parsed into a 
 #   proprietarily designed list of ID's to then be used inside a squad object
-def get_player_info(summonerName, apiKey):
-    api_url_summName = "https://na1.api.riotgames.com/lol/summoner/v4/summoners/by-name/" + summonerName
-    api_urlkey = api_url_summName + '?api_key=' + apiKey
-    reqResp = requests.get(api_urlkey)
-    player_info = reqResp.json()
+def get_player_info(riot_id, apiKey):
+    # api_url_summName = "https://na1.api.riotgames.com/lol/summoner/v4/summoners/by-name/" + summonerName
+    # api_urlkey = api_url_summName + '?api_key=' + apiKey
+    # reqResp = requests.get(api_urlkey)
+    # player_info = reqResp.json()
+    print("Original Riot_ID: " + riot_id)
+    new_riot_id = replace_spaces_with_percent20(riot_id)
+    print("Updated Riot ID: " + new_riot_id)
+    IDandTag = parse_id_and_tag(new_riot_id)
+    print("Parsed RiotID: " + IDandTag[0] + " and " + IDandTag[1])
+    api_url_riot_id = "https://americas.api.riotgames.com/riot/account/v1/accounts/by-riot-id/" + IDandTag[0]
+    print(api_url_riot_id)
+    api_url_plus_key = api_url_riot_id + "/" + IDandTag[1] + "?api_key=" + apiKey
+    print(api_url_plus_key)
+    request_resp = requests.get(api_url_plus_key)
+    summ_info = request_resp.json()
+    puuID = summ_info['puuid']
 
-    #There shouldn't be any logic here, this section could be put into
-    #   the gather squad info 
-    name = player_info['name']
-    acctId = player_info['accountId']
-    id = player_info['id']
-    lvl = str(player_info['summonerLevel'])
-    puuId = player_info['puuid']
-    player_info = [name, acctId, id, lvl, puuId]
+    api_url_puuid = "https://na1.api.riotgames.com/lol/summoner/v4/summoners/by-puuid/" + puuID
+    api_url_plus_key = api_url_puuid + '?api_key=' + apiKey
+    request_resp = requests.get(api_url_plus_key)
+    summ_info = request_resp.json()
+
+    name = riot_id
+    acctId = summ_info['accountId']
+    id = summ_info['id']
+    lvl = str(summ_info['summonerLevel'])
+    # puuId = player_info['puuid']
+    player_info = [name, acctId, id, lvl, puuID]
     return player_info
+
+def replace_spaces_with_percent20(riot_id):
+    return riot_id.replace(' ', '%20')
+def parse_id_and_tag(input_id):
+    if '#' in input_id:
+        parts = input_id.split('#')
+        id = parts[0]
+        tag = parts[1]
+        return [id, tag]
+    else:
+        return [input_id, 'NA1']
+    
 
 #Match History Gathering: Uses (and only works with) player puu_id and API key. 
 #   Returns list of 20 most recently play games.
@@ -72,11 +99,37 @@ def get_match_gamemode(matchID, apiKey):
 # Uses metadata to find the players' order in that match ->
 #    This is done by comparing input puuId's with the metadata list
 # Pulls data set from matchinfo based on player's position in the order
-def get_player_match_info(matchInfo, matchMetaData, player_puuID):
+def get_player_match_info(matchInfo, matchMetaData, playerPuuID):
     #MetaData key - "participants" - contains full participants list. Obtain this list
     matchPlayerList = matchMetaData['participants']
     #Safe to use Index method as every player puuID is guaranteed unique.
     #   It then returns the index value for the player in the list
-    playerListPosition = matchPlayerList.index(player_puuID)
+    pListPosition = matchPlayerList.index(playerPuuID)
     #Return all match specific metrics for this player
-    return matchInfo['participants'][playerListPosition]
+    return matchInfo['participants'][pListPosition]
+
+def get_enemy_team_info(matchInfo, matchMetaData, puuIDList):
+    pList = matchMetaData['participants']
+    enemyTeamComp = []
+    squadIsBottom = True
+    for puuID in puuIDList:
+        pListPosition = pList.index(puuID)
+        if pListPosition >= 5:
+            squadIsBottom = False
+    if squadIsBottom:
+        # Our squad is on the bottom of the list of participants, therefore, the
+        #   enemy team is contained in the indexes of 5-9.
+        for pListPosition in range(5, 10):
+            currEnemyInfo = matchInfo['participants'][pListPosition]
+            enemyTeamComp.append(currEnemyInfo['championName'])
+    else:
+        # Our squad is on the top of the list of participants, therefore, the
+        #   enemy team is contained in the indexes of 0-4.
+        for pListPosition in range(5):
+            currEnemyInfo = matchInfo['participants'][pListPosition]
+            enemyTeamComp.append(currEnemyInfo['championName'])
+
+    #print(enemyTeamComp)
+    return enemyTeamComp
+
+

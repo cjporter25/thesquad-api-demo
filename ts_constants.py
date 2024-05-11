@@ -226,6 +226,8 @@ RESPONSE_CODE_BADREQUEST = 400
 KG_ACCTID = "Sh_tOAI3iWl6LF9WmXhSLU8Tj9769QsK85JjialsF7OWchQ"
 KB_INVALID_VALUE = KG_ACCTID
 
+KG_PUUID = "k6JM2AMfEJlM9SXmsDSzlc1YM96OzSut42yR1E7XkDTjynBkbdyBO6uAzlLAJjX6fhMg2X6cDKOFxQ"
+
     # Code 401 - "Unathorized". Indicates that the request being made did not
     #   contain the necessary authentication credentials, i.e., APIkey was not
     #   provided.
@@ -264,7 +266,7 @@ KG_SQUAD_ID_3_MEM = "8I_GBKGG_aJU"
 
 TEST_SQUAD_LIST_03 = ["Chrispychickn25", "PureLunar"]
 TEST_SQUAD_LIST_02 = ["Chrispychickn25", "Serandipityyy"] # WORKS NOW
-TEST_SQUAD_LIST_01 = ["Shensëi", "PureLunar", "Serandipityyy"] # Worked
+TEST_SQUAD_LIST_01 = ["La Migra Oficial#6362", "PureLunar", "Serandipityyy"] # Worked
 TEST_SQUAD_LIST_0 = ["Chrispychickn25", "Shensëi", "PureLunar", "Serandipityyy"] # Worked
 TEST_SQUAD_LIST_1 = ["Chrispychickn25", "Shensëi", "PureLunar"] # Worked
 TEST_SQUAD_LIST_2 = ["Chrispychickn25", "Shensëi"] # Worked

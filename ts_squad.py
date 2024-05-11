@@ -48,7 +48,7 @@ class Squad:
         #self.show_member_list()
         self.gather_squad_member_info(apiKey)
         self.create_squad_id()
-        #self.show_squad_ID()
+        self.show_squad_ID()
             #MIN_MATCH_HISTORY_COUNT = "0"
             #REC_MATCH_HISTORY_COUNT = "90"
             #MAX_MATCH_HISTORY_COUNT = "100"
@@ -126,6 +126,7 @@ class Squad:
         newSharedMatchList = {}
         squadMatchHistory = self.get_squad_match_history()
         numOfMembers = len(squadMatchHistory)
+        puuIDList = self.retrieve_puuID_list()
         # Used first match history in the list as a reference list to compare against the others
         for matchID in squadMatchHistory[0]:
             wholeSquadPresent = True
@@ -139,22 +140,24 @@ class Squad:
                 # Save specific match's info
                 matchInfo = match_stuff['info']
                 # Save specific match's metadata
-                matchMetadata = match_stuff['metadata']
+                matchMetaData = match_stuff['metadata']
                 # Pull match data that applies to all players, i.e., game duration and mode
                 newMatchData = {'gameDuration' : matchInfo['gameDuration'],
                                 'gameMode' : matchInfo['gameMode'],
                                 }
                 # Add specific match data per squad member, based on their puuID
-                for puuID in self.retrieve_puuID_list():
+                for puuID in puuIDList:
                     # Use indexing to find the specified members data for this match
-                    playerMatchInfo = get_player_match_info(matchInfo, matchMetadata, puuID)
-                    # Add a new dictionary object as the value for the puuID being added
+                    playerMatchInfo = get_player_match_info(matchInfo, matchMetaData, puuID)
+                    # Add a new dictionary object as the value for the puuID being adde. ARAM
+                    #   matches will only save the championName and win variables
                     newMatchData[puuID] = {'championName' : playerMatchInfo['championName'],
                                            'individualPosition' : playerMatchInfo['individualPosition'],
                                            'lane' : playerMatchInfo['lane'],
                                            'role' : playerMatchInfo['role'],
                                            'teamPosition' : playerMatchInfo['teamPosition'],
                                            'win' : playerMatchInfo['win']}
+                newMatchData['enemyTeam'] = get_enemy_team_info(matchInfo, matchMetaData, puuIDList)
                 # Save newly gathered info about the current shared match
                 newSharedMatchList[matchID] = newMatchData
         # Save match
@@ -224,6 +227,41 @@ class Squad:
             self.set_shared_match_history(sharedMatchData)
             EXE_META_DATA['totalRiotReqCount'] = self.get_riot_request_count()
     
+    def ARAM_match_data_repair(self, memberList, apiKey):
+        self.set_member_list(memberList)
+        self.gather_squad_member_info(apiKey)
+        self.create_squad_id()
+        puuIDList = self.retrieve_puuID_list()
+        squadID = self.get_squad_id()        
+        repairedMatchList = {}
+
+        matchIDList = retrieve_ARAM_db_match_list(self.get_squad_id())
+
+        for matchID in matchIDList:
+            time.sleep(2)
+            print("Stored Match: " + matchID)
+            match_stuff = get_match(matchID, apiKey)
+            if 'info' not in match_stuff or 'status' in match_stuff:
+                print("Match: " + matchID + " was too old...")
+                continue
+            print("Match: " + matchID + " is still good. Pulling data...")
+            matchMetaData = match_stuff['metadata']
+            matchInfo = match_stuff['info']
+            newMatchData = {'gameDuration' : matchInfo['gameDuration'],
+                            'gameMode' : matchInfo['gameMode'],
+                            }
+            for puuID in puuIDList:
+                playerMatchInfo = get_player_match_info(matchInfo, matchMetaData, puuID)
+                newMatchData[puuID] = {'championName' : playerMatchInfo['championName'],
+                                           'individualPosition' : playerMatchInfo['individualPosition'],
+                                           'lane' : playerMatchInfo['lane'],
+                                           'role' : playerMatchInfo['role'],
+                                           'teamPosition' : playerMatchInfo['teamPosition'],
+                                           'win' : playerMatchInfo['win']}  
+            newMatchData['enemyTeam'] = get_enemy_team_info(matchInfo, matchMetaData, puuIDList)
+            repairedMatchList[matchID] = newMatchData
+        ARAM_match_list_data_repair(squadID, puuIDList, repairedMatchList)
+
     def save_exe_meta_data(self, db):
         sysDate = date.today()
         currDateLog = sysDate.strftime("%m%d%Y")

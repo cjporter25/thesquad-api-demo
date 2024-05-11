@@ -4,6 +4,7 @@ from operator import itemgetter
 import firebase_admin
 from firebase_admin import credentials
 from firebase_admin import firestore
+from ts_riot_api import *
 from ts_constants import *
 from threading import Event
 import time
@@ -150,6 +151,43 @@ def validate_summoner_names(squadID, puuIDList, memberInfo, db):
             else:
                 dataBuilder.set({u'summonerName': newName}, merge=True)
 
+def retrieve_ARAM_db_match_list(squadID):
+    #Initiate Firebase session
+    db = firestore.client()
+    savedSquadARAMList = []
+    sharedARAMList = db \
+                .document(u'TheSquad/SquadID') \
+                .collection(squadID) \
+                .document(u'SharedMatchLists') \
+                .collection(u'SharedARAMMatchList') \
+                .stream()
+    for matchID in sharedARAMList:
+        if(matchID.id != "NA_TEMP"):
+            savedSquadARAMList.append(matchID.id)
+    print(savedSquadARAMList)
+    return savedSquadARAMList
+
+def ARAM_match_list_data_repair(squadID, puuIDList, repairedMatchList):
+    db = firestore.client()
+    for matchID in repairedMatchList:
+        gameMode = repairedMatchList[matchID]['gameMode']
+        gameDuration = repairedMatchList[matchID]['gameDuration']
+        if (gameMode == 'ARAM'):
+            matchDataBuilder = db \
+                        .document(u'TheSquad/SquadID') \
+                        .collection(squadID) \
+                        .document(u'SharedMatchLists') \
+                        .collection(u'SharedARAMMatchList') \
+                        .document(matchID)
+            newMatchData = {u'gameDuration' : gameDuration,
+                            u'gameMode': gameMode,
+                            u'readStatus': True}
+            newMatchData['enemyTeam'] = repairedMatchList[matchID]['enemyTeam']
+            for puuID in puuIDList:
+                    newMatchData[puuID] = [repairedMatchList[matchID][puuID]['championName'], 
+                                           repairedMatchList[matchID][puuID]['win']]
+            matchDataBuilder.set(newMatchData, merge=True)
+            
 def build_squad(squad, projStart):
 
     firebaseStart = time.time()
@@ -309,6 +347,7 @@ def add_shared_ARAM_match_history(squadID, sharedMatchHistory, puuIDList, db):
                 playerInfo = [matchData[puuID]['championName'], 
                               matchData[puuID]['win']]
                 newMatchData[puuID] = playerInfo
+                newMatchData['enemyTeam'] = matchData['enemyTeam']
             matchListBuilder.set(newMatchData, merge=True)  
 def add_shared_SR_match_history(squadID, sharedMatchHistory, puuIDList, db):
     for matchID, matchData in sharedMatchHistory.items():
@@ -381,6 +420,7 @@ def update_shared_ARAM_match_list(squadID, sharedMatchHistory, puuIDList, db):
         # If the match has not been added yet, meaning the current matchID has not
         #   yet been saved to the database, go through the adding algorithm
         if(matchInDatabase == False):
+            #print(enemyTeam)
             gameMode = sharedMatchHistory[localMatchID]['gameMode']
             gameDuration = sharedMatchHistory[localMatchID]['gameDuration']
             if (gameMode == "ARAM"):
@@ -398,6 +438,7 @@ def update_shared_ARAM_match_list(squadID, sharedMatchHistory, puuIDList, db):
                     playerInfo = [sharedMatchHistory[localMatchID][puuID]['championName'], 
                                   sharedMatchHistory[localMatchID][puuID]['win']]
                     newMatchData[puuID] = playerInfo
+                newMatchData['enemyTeam'] = sharedMatchHistory[localMatchID]['enemyTeam']
                 matchListBuilder.set(newMatchData, merge=True)
     print("     Number ARAM matches already added from shared list-->" + str(len(matchesAlreadyAdded)))
     EXE_META_DATA['sharedARAMMatchesAlreadyPresent'] = len(matchesAlreadyAdded)
@@ -922,6 +963,7 @@ def get_champ_archetype(champName, db):
     champList = champDataList.to_dict()
     archetype = champList[champName][1]
     return archetype
+
 
 # Usage - Reset data individual member data points and readStatus of each
 #         match to FALSE. This doubles as a means to cleanly add data points

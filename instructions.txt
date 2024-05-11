@@ -1,3 +1,24 @@
+***QUICK TEST INSTRUCTIONS***
+- ".venv/Scripts/Activate.ps1" (activate environment)
+- heroku login (login to heroku)
+- heroku maintenance
+    - "off" means app is deployed
+    - "on" means app is not-deployed
+- python -m flask run 
+    - This is so the environment variables get initiated correctly
+- Launch postman
+- Use command localhost:5000/retrieve-squad-data/.....
+ 
+***MAINTENANCE MODE***
+- To turn maintenance mode on and off, use the following commands:
+    - heroku maintenance:off
+    - heroku maintenance:on
+
+***CHANGING CONFIG VARS***
+- heroku config:set RIOT_KEY=""
+- heroku config:get RIOT_KEY
+- etc.
+
 **Initial Setup**
     - Create a folder to establish a workspace with the project's name
     - Use the Visual Studio Code command "Create Environment" to establish
@@ -73,9 +94,9 @@
 
 **TURNING APP ON AND OFF**
     - heroku maintenance:on
-        - The app serves a static maintenance page 
+        - DISABLES APP. The app serves a static maintenance page 
     - heroku maintenance:off 
-        - Disables maintenance mode 
+        - ENABLES APP. Disables maintenance mode 
     - heroku maintenance 
         - Displays the status of whether the mode is enabled
 
