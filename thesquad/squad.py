@@ -1,8 +1,8 @@
 # Squad object Class
 #   About: Contains all data structure necessary to scaffold new squad
 #           information, add to what's already there, or analyze data
-from ts_riot_api import *
-from ts_firebase import *
+from thesquad.riot_api import *
+from thesquad.firebase import *
 
 import time
 import json

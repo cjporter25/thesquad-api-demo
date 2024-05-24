@@ -1,9 +1,12 @@
-import sys
+# import sys
+# import unittest
 
 # Only works because there is an "__init__.py" file inside that directory.
 #   Python then interprets the folder as a python package.
+# This file should be considered a secondary "main" when used. 
+# AS OF 5.24.24 (not in use)
 from app_util import *
-import unittest
+
 
 #TEST
 #   Check whether summoner name exists
@@ -112,7 +115,7 @@ def test_response_unathorized():
     #   authorized. Usually due to invalid API key, blacklisted API key, or 
     #   request was for an incorrect path.
     # Usage - Make a call to retrieve match data. Expects the correct URL, matchID,
-    #         and a valid apikey. Providing a bad apikey, should trigger the specific response
+    #         and a valid apikey. Providing a bad apikey should trigger the specific response
 def test_response_forbidden():
     print("Test Request - Forbidden")
     response = get_match(KG_MATCHID, KB_SHORT_APIKEY)

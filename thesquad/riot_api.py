@@ -5,19 +5,14 @@ from threading import Event
 #   summoner name (if valid). This data is then manually parsed into a 
 #   proprietarily designed list of ID's to then be used inside a squad object
 def get_player_info(riot_id, apiKey):
-    # api_url_summName = "https://na1.api.riotgames.com/lol/summoner/v4/summoners/by-name/" + summonerName
-    # api_urlkey = api_url_summName + '?api_key=' + apiKey
-    # reqResp = requests.get(api_urlkey)
-    # player_info = reqResp.json()
-    print("Original Riot_ID: " + riot_id)
     new_riot_id = replace_spaces_with_percent20(riot_id)
-    print("Updated Riot ID: " + new_riot_id)
+    # print("Updated Riot ID: " + new_riot_id)
     IDandTag = parse_id_and_tag(new_riot_id)
-    print("Parsed RiotID: " + IDandTag[0] + " and " + IDandTag[1])
+    # print("Parsed RiotID: " + IDandTag[0] + " and " + IDandTag[1])
     api_url_riot_id = "https://americas.api.riotgames.com/riot/account/v1/accounts/by-riot-id/" + IDandTag[0]
-    print(api_url_riot_id)
+    # print(api_url_riot_id)
     api_url_plus_key = api_url_riot_id + "/" + IDandTag[1] + "?api_key=" + apiKey
-    print(api_url_plus_key)
+    # print(api_url_plus_key)
     request_resp = requests.get(api_url_plus_key)
     summ_info = request_resp.json()
     puuID = summ_info['puuid']

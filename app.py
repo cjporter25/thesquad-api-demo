@@ -11,7 +11,6 @@ from app_util import *
 
 # from datetime import datetime --> Now imported from firebase module
 # from ts_riot_api import KEY --> KEYS are now setup as environment vars
-# from util import generate_new_key --> Uneeded, will implement in later stages
 
 # Establish reference name for Flask
 app = Flask(__name__)
@@ -32,6 +31,7 @@ clear_firebase_cred()
 @app.route("/")
 def index():
     return render_template('index.html')
+    #return "WORK IN PROGRESS... This will eventually have API usage instructions"
 
 @app.route("/hello/")
 def hello():
@@ -39,8 +39,10 @@ def hello():
     squad1.ARAM_match_data_repair(TEST_SQUAD_LIST_01, riot_key)
     return "Hello!"
 
-# Usage: www.thesquadapi.com/repair-match-data/?p1=<name>&p2=<name>&... 
-# localhost:5000/repair-match-data/?p1=<name>&p2=<name>&...
+# Usage: www.thesquadapi.com/repair-match-data/?p1=<name>&p2=<name>&...
+# 3MAN LOCAL --> 
+# localhost:5000/repair-match-data/?p0=PureLunar%23NA1&p1=La%20Migra%20Oficial%236362&p2=Serandipityyy%23NA1
+# localhost:5000/repair-match-data/?p0=Chrispychickn25%23NA1&p1=PureLunar%23NA1&p2=Serandipityyy%23NA1
 @app.route("/repair-match-data/")
 def repair_match_data():
     p0 = request.args.get("p0", default="N/A", type=str)
@@ -59,7 +61,7 @@ def repair_match_data():
     return "repair was succesful"
 
 # Usage: www.thesquadapi.com/get-player-info/<summoner_name>
-# Ex: localhost:5000/get-player-info/<summoner_name>
+# Ex: localhost:5000/get-player-info/Chrispychickn25
 @app.route("/get-player-info/<summoner_name>")
 def get_player_info(summoner_name):
     api_url_summName = "https://na1.api.riotgames.com/lol/summoner/v4/summoners/by-name/" + summoner_name
@@ -78,7 +80,7 @@ def get_player_info(summoner_name):
     return jsonify(player_info), 200
 
 # Usage: www.thesquadapi.com/get-player-info/by-riot-id/<riot_id>/?tagline=<string>
-# Ex: localhost:5000/get-player-info/by-riot-id/<riot_id>/?tagline=NA1
+# Ex: localhost:5000/get-player-info/by-riot-id/Chrispychickn25/?tagline=NA1
 @app.route("/get-player-info/by-riot-id/<riot_id>/")
 def get_player_info_riotID(riot_id):
     tagline = request.args.get("tagline", default="20", type=str)
@@ -156,8 +158,15 @@ def check_squad_id(squadid):
         return "The squad id: " + squadid + " does NOT exist!"
 
 # Usage: www.thesquadapi.com/get-squad-data/?p1=<name>&p2=<name>&...
-
-# localhost:5000/retrieve-squad-data/?p1=<name>&p2=<name>&...
+# 2MAN LOCAL -->
+# localhost:5000/retrieve-squad-data/?p0=PureLunar%23NA1&p1=La%20Migra%20Oficial%236362
+# 3MAN LOCAL --> 
+# localhost:5000/retrieve-squad-data/?p0=PureLunar%23NA1&p1=La%20Migra%20Oficial%236362&p2=Serandipityyy%23NA1
+# localhost:5000/retrieve-squad-data/?p0=PureLunar&p1=La%20Migra%20Oficial%236362&p2=Serandipityyy
+# localhost:5000/retrieve-squad-data/?p0=Chrispychickn25%23NA1&p1=PureLunar%23NA1&p2=Serandipityyy%23NA1
+# 4MAN LOCAL -->
+# localhost:5000/retrieve-squad-data/
+#           ?p0=Chrispychickn25%23NA1&p1=PureLunar%23NA1&p2=Serandipityyy%23NA1&p3=La%20Migra%20Oficial%236362
 @app.route("/retrieve-squad-data/")
 def retrieve_squad_data():
     p0 = request.args.get("p0", default="N/A", type=str)
@@ -181,6 +190,7 @@ def retrieve_squad_data():
 
     return sqData, 200
     
+
 # Usage: www.thesquadapi.com/testenv/
 @app.route("/testenv/")
 def test_env():
@@ -210,6 +220,11 @@ def test_env():
 
     return "CHECK OUTPUT BITCH", 200
 
+
+#@app.route("/generate-new-api-key/<username>")
+#def generate_new_api_key(username):
+#    userkey = generate_new_key(username)
+#    return userkey, 200
 
 if __name__ == "__main__":
     app.run(debug=False)

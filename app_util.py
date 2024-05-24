@@ -3,7 +3,7 @@ import string
 import os
 import json
 
-from ts_squad import *
+from thesquad.squad import *
 
 def generate_new_key(username):
     characters = string.ascii_uppercase + string.digits

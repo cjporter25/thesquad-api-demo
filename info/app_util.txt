@@ -1,0 +1,47 @@
+***PROCESS USED TO ENCRYPT AND DECRYPT***
+
+    new_key1 = ""
+    curr_val = 0
+    new_val = 0
+    new_char = ''
+    new_line_present = False
+    for char in fb_priv_key:
+        if new_line_present == True:
+            new_line_present = False
+            continue
+        curr_val = ord(char)
+        new_val = curr_val + 1
+        if curr_val == 92:
+            new_val = 42
+            new_char = chr(new_val)
+            new_key1 += new_char
+            new_line_present = True
+            continue
+        if curr_val == 90:  # If current char is "Z" set it too "+"
+            new_val = 43
+        if curr_val == 122:  # If current char is "z" set it too "-"
+            new_val = 45
+        new_char = chr(new_val)
+        new_key1 += new_char
+    
+    new_key2 = ""
+    for char in new_key1:
+        curr_val = ord(char)
+        if curr_val == 42:
+            new_val = 10
+            new_char = chr(new_val)
+            new_key2 += new_char
+            continue
+        if curr_val == 43:
+            new_val = 90
+            new_char = chr(new_val)
+            new_key2 += new_char
+            continue
+        if curr_val == 45:
+            new_val = 122
+            new_char = chr(new_val)
+            new_key2 += new_char
+            continue
+        new_val = curr_val - 1
+        new_char = chr(new_val)
+        new_key2 += new_char

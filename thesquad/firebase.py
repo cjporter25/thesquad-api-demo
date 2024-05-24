@@ -1,13 +1,17 @@
+# Standard  Library Imports
 from datetime import datetime
 from datetime import date
 from operator import itemgetter
+import time
+
+# Firebase Imports
 import firebase_admin
 from firebase_admin import credentials
 from firebase_admin import firestore
-from ts_riot_api import *
-from ts_constants import *
-from threading import Event
-import time
+
+# Local App Imports
+from thesquad.riot_api import *
+from thesquad.constants import *
 
 # IF NECESSARY TO SPACE OUT OUTPUT
 #Event().wait(1)
@@ -116,6 +120,8 @@ def get_riot_api_key():
         print("Key does not exist")             # If not, print failure and
         return " "                              # Return empty string
 
+##################### START FIREBASE ################################
+
 def check_squad_id(squadID, db):
     print("Looking for Squad ID in Database...")
     db = firestore.client()
@@ -187,7 +193,7 @@ def ARAM_match_list_data_repair(squadID, puuIDList, repairedMatchList):
                     newMatchData[puuID] = [repairedMatchList[matchID][puuID]['championName'], 
                                            repairedMatchList[matchID][puuID]['win']]
             matchDataBuilder.set(newMatchData, merge=True)
-            
+    
 def build_squad(squad, projStart):
 
     firebaseStart = time.time()
