@@ -22,7 +22,7 @@ def get_player_info(riot_id, apiKey):
     request_resp = requests.get(api_url_plus_key)
     summ_info = request_resp.json()
 
-    name = riot_id
+    name = replace_percent20_with_spaces(IDandTag[0])
     acctId = summ_info['accountId']
     id = summ_info['id']
     lvl = str(summ_info['summonerLevel'])
@@ -32,6 +32,8 @@ def get_player_info(riot_id, apiKey):
 
 def replace_spaces_with_percent20(riot_id):
     return riot_id.replace(' ', '%20')
+def replace_percent20_with_spaces(riot_id):
+    return riot_id.replace('%20', ' ')
 def parse_id_and_tag(input_id):
     if '#' in input_id:
         parts = input_id.split('#')
@@ -74,7 +76,7 @@ def get_match_metadata(matchID, apiKey):
     matchMetaData = reqResp.json()
     return matchMetaData['metadata']
 
-# Gather Match Metadata: Request data based on MatchID. Parse for the "Info"
+# Gather Match Info: Request data based on MatchID. Parse for the "Info"
 #   section. Return the "info" section only
 # UPDATE: Only used for testing to reduce overall requests made in main
 def get_match_info(matchID, apiKey):

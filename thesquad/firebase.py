@@ -1,6 +1,5 @@
 # Standard  Library Imports
-from datetime import datetime
-from datetime import date
+from datetime import datetime, date, timedelta
 from operator import itemgetter
 import time
 
@@ -38,89 +37,13 @@ INCREMENT = firestore.Increment(1)
 #                 'totalSharedMatches' : 0,
 #                 }
 
-# Helper method to help developer add champions and their associated data
-def add_champ_data():
-    # Initialize connection to database
-    #firebase_admin.initialize_app(cred)
-    db = firestore.client()
-
-    # Begin user input section
-    addNewChamp = True
-    print("***Begin champion adding protocol***")
-    while addNewChamp:
-        newChamp = input('Champion Name: ')
-        print("Options: [Top-> 1] [Jungle-> 2] [Mid-> 3] [Bottom-> 4] [Support-> 5] ")
-        mostCommonPosition = int(input('Most Common Position: '))
-        print("Options: [Assasin-> 6] [Fighter-> 7] [Mage-> 8]\n"
-              "         [Marksman-> 9] [Support-> 10] [Tank-> 11]")
-        primaryChampRole = int(input('Primary Role: '))
-        print("Options: [Assasin-> 6] [Fighter-> 7] [Mage-> 8]\n"
-              "         [Marksman-> 9] [Support-> 10] [Tank-> 11]\n"
-              "         [Enchanter-> 12] [Juggernaut-> 13] [Crowd Control-> 14]")
-        secondaryChampRole = int(input('Secondary Role: '))
-        champRef = db.collection(u'TheSquad').document(u'championData')
-        champRef.set({
-            newChamp: [mostCommonPosition, primaryChampRole, secondaryChampRole]
-        }, merge=True)
-        continueCheck = input("Continue? (y/n): ")
-        if continueCheck != 'y':
-            addNewChamp = False
-
-def get_current_time():
-    sysTime = datetime.now()
-    currTime = sysTime.strftime("%H:%M:%S")
-    return currTime
-
-def get_current_date():
-    sysDate = date.today()
-    currDate = sysDate.strftime("%B %d, %Y")
-    return currDate
-
-def save_squad_data_to_squad(squad, db):
-    squadData = db \
-            .document(u'TheSquad/SquadID') \
-            .collection(squad.get_squad_id()) \
-            .document(u'SquadData')
-    squadDataList = squadData.get().to_dict()
-    metricsList = list(squadDataList.keys())
-    metricsList.sort()
-    sortedDataList = {i: squadDataList[i] for i in metricsList}
-    squad.set_squad_data(sortedDataList)
-
-def save_exe_meta_data(db):
-    
-    sysDate = date.today()
-    currDateLog = sysDate.strftime("%m%d%Y")
-    sysTime = datetime.now()
-    currTimeLog = sysTime.strftime("%H%M%S")
-
-    dataLogID = (currDateLog + "." + currTimeLog)
-    dataBuilder = db.collection(u'Data').document(dataLogID)
-    dataBuilder.set(EXE_META_DATA)
 
 def init_firebase():
     cred = credentials.Certificate("firebase.json")
     firebase_admin.initialize_app(cred)
     print("****************************************************INITIALIZING APP********************************************************")
 
-######## NO LONGER NEEDED. KEY IS HELD BY CONFIG VARS ###########-
-def get_riot_api_key():
-    # firebase_admin.initialize_app(cred)
-    db = firestore.client()
-
-    # admin_ref = db.document(u'Admin/Keys') <- Should also work
-    admin_ref = db.collection(u'Admin').document(u'Keys')
-    # Retrieve document from database
-    keys = admin_ref.get() 
-    # Confirm the "keys" document exists
-    if keys.exists:        
-        print("Key retrieval successful")       # If so, print success
-        return keys.to_dict().get("riotDevAPI") # Convert to useable dictionary
-    else:                                       #   object. Get value from id
-        print("Key does not exist")             # If not, print failure and
-        return " "                              # Return empty string
-
-##################### START FIREBASE ################################
+##################### START FIREBASE SECTION ################################
 
 def check_squad_id(squadID, db):
     print("Looking for Squad ID in Database...")
@@ -157,43 +80,6 @@ def validate_summoner_names(squadID, puuIDList, memberInfo, db):
             else:
                 dataBuilder.set({u'summonerName': newName}, merge=True)
 
-def retrieve_ARAM_db_match_list(squadID):
-    #Initiate Firebase session
-    db = firestore.client()
-    savedSquadARAMList = []
-    sharedARAMList = db \
-                .document(u'TheSquad/SquadID') \
-                .collection(squadID) \
-                .document(u'SharedMatchLists') \
-                .collection(u'SharedARAMMatchList') \
-                .stream()
-    for matchID in sharedARAMList:
-        if(matchID.id != "NA_TEMP"):
-            savedSquadARAMList.append(matchID.id)
-    print(savedSquadARAMList)
-    return savedSquadARAMList
-
-def ARAM_match_list_data_repair(squadID, puuIDList, repairedMatchList):
-    db = firestore.client()
-    for matchID in repairedMatchList:
-        gameMode = repairedMatchList[matchID]['gameMode']
-        gameDuration = repairedMatchList[matchID]['gameDuration']
-        if (gameMode == 'ARAM'):
-            matchDataBuilder = db \
-                        .document(u'TheSquad/SquadID') \
-                        .collection(squadID) \
-                        .document(u'SharedMatchLists') \
-                        .collection(u'SharedARAMMatchList') \
-                        .document(matchID)
-            newMatchData = {u'gameDuration' : gameDuration,
-                            u'gameMode': gameMode,
-                            u'readStatus': True}
-            newMatchData['enemyTeam'] = repairedMatchList[matchID]['enemyTeam']
-            for puuID in puuIDList:
-                    newMatchData[puuID] = [repairedMatchList[matchID][puuID]['championName'], 
-                                           repairedMatchList[matchID][puuID]['win']]
-            matchDataBuilder.set(newMatchData, merge=True)
-    
 def build_squad(squad, projStart):
 
     firebaseStart = time.time()
@@ -380,7 +266,7 @@ def add_shared_SR_match_history(squadID, sharedMatchHistory, puuIDList, db):
             matchListBuilder.set(newMatchData, merge=True)
 
 def update_squad(squad, squadID, memberInfo, sharedMatchHistory, puuIDList, db):
-    #clear_all_member_data_sets(squadID, memberInfo, db)
+    # clear_all_member_data_sets(squadID, memberInfo, db)
 
     update_shared_ARAM_match_list(squadID, sharedMatchHistory, puuIDList, db)
     analyze_shared_ARAM_match_list(squadID, puuIDList, db)
@@ -390,6 +276,8 @@ def update_squad(squad, squadID, memberInfo, sharedMatchHistory, puuIDList, db):
 
     update_squad_ARAM_data_set(squadID, puuIDList, db)
     update_squad_SR_data_set(squadID, puuIDList, db)
+
+    wrap_up(squadID, db)
 
     save_squad_data_to_squad(squad, db)
 
@@ -744,13 +632,15 @@ def update_squad_ARAM_data_set(squadID, puuIDList, db):
                     .document(u'TheSquad/SquadID') \
                     .collection(squadID) \
                     .document(u'SquadData')
-    dataBuilder.set({u'ARAM_highestWinrate_Assasin': assWRList,
-                     u'ARAM_highestWinrate_Enchanter': encWRList,
-                     u'ARAM_highestWinrate_Fighter': figWRList,
-                     u'ARAM_highestWinrate_Mage': magWRList,
-                     u'ARAM_highestWinrate_Marksman': marWRList,
-                     u'ARAM_highestWinrate_Support': supWRList,
-                     u'ARAM_highestWinrate_Tank': tanWRList}, merge=True)
+    dataBuilder.set({u'ARAM_sqWinrates_Assasin': assWRList,
+                     u'ARAM_sqWinrates_Enchanter': encWRList,
+                     u'ARAM_sqWinrates_Fighter': figWRList,
+                     u'ARAM_sqWinrates_Mage': magWRList,
+                     u'ARAM_sqWinrates_Marksman': marWRList,
+                     u'ARAM_sqWinrates_Support': supWRList,
+                     u'ARAM_sqWinrates_Tank': tanWRList}, merge=False)
+                    # merge=False erases everything previously
+                    # merge=True simply adds to items already there
     
     update_squad_ARAM_winrate(squadID, puuIDList, db)
 def update_squad_ARAM_winrate(squadID, puuIDList, db):
@@ -761,6 +651,8 @@ def update_squad_ARAM_winrate(squadID, puuIDList, db):
                     .collection(u'MemberData') \
                     .document(puuIDList[0])
     memData = dataBuilder.get().to_dict()
+    # Since every member play, won, lost together, the total matches
+    #   played, won, and lost can be represented by one of them
     aramTotalPlayed = memData['ARAM_totalMatchesPlayed']
     aramTotalWon = memData['ARAM_totalMatchesWon']
     aramTotalLost = memData['ARAM_totalMatchesLost']
@@ -773,10 +665,10 @@ def update_squad_ARAM_winrate(squadID, puuIDList, db):
                     .document(u'TheSquad/SquadID') \
                     .collection(squadID) \
                     .document(u'SquadData')
-    dataBuilder.set({u'ARAM_matchesLost': aramTotalLost,
-                     u'ARAM_matchesPlayed': aramTotalPlayed,
-                     u'ARAM_matchesWon': aramTotalWon,
-                     u'ARAM_winrate': aramWinrate}, merge=True)
+    dataBuilder.set({u'ARAM_sqMatchesLost': aramTotalLost,
+                     u'ARAM_sqMatchesPlayed': aramTotalPlayed,
+                     u'ARAM_sqMatchesWon': aramTotalWon,
+                     u'ARAM_sqWinrate': aramWinrate}, merge=True)
 def update_squad_SR_data_set(squadID, puuIDList, db):
     update_squad_SR_data_set_arch(squadID, puuIDList, db)
     update_squad_SR_data_set_pos(squadID, puuIDList, db)
@@ -863,13 +755,13 @@ def update_squad_SR_data_set_arch(squadID, puuIDList, db):
                     .document(u'TheSquad/SquadID') \
                     .collection(squadID) \
                     .document(u'SquadData')
-    dataBuilder.set({u'SR_highestWinrate_Assasin': assWRList,
-                     u'SR_highestWinrate_Enchanter': encWRList,
-                     u'SR_highestWinrate_Fighter': figWRList,
-                     u'SR_highestWinrate_Mage': magWRList,
-                     u'SR_highestWinrate_Marksman': marWRList,
-                     u'SR_highestWinrate_Support': supWRList,
-                     u'SR_highestWinrate_Tank': tanWRList}, merge=True)
+    dataBuilder.set({u'SR_sqWinrates_Assasin': assWRList,
+                     u'SR_sqWinrates_Enchanter': encWRList,
+                     u'SR_sqWinrates_Fighter': figWRList,
+                     u'SR_sqWinrates_Mage': magWRList,
+                     u'SR_sqWinrates_Marksman': marWRList,
+                     u'SR_sqWinrates_Support': supWRList,
+                     u'SR_sqWinrates_Tank': tanWRList}, merge=True)
 def update_squad_SR_data_set_pos(squadID, puuIDList, db):
     botWRs = []
     junWRs = []
@@ -934,11 +826,11 @@ def update_squad_SR_data_set_pos(squadID, puuIDList, db):
                     .document(u'TheSquad/SquadID') \
                     .collection(squadID) \
                     .document(u'SquadData')
-    dataBuilder.set({u'SR_highestWinrateBot': botWRList,
-                     u'SR_highestWinrateJung': junWRList,
-                     u'SR_highestWinrateMid': midWRList,
-                     u'SR_highestWinrateSup': supWRList,
-                     u'SR_highestWinrateTop': topWRList}, merge=True)
+    dataBuilder.set({u'SR_sqWinrates_Bot': botWRList,
+                     u'SR_sqWinrates_Jung': junWRList,
+                     u'SR_sqWinrates_Mid': midWRList,
+                     u'SR_sqWinrates_Sup': supWRList,
+                     u'SR_sqWinrates_Top': topWRList}, merge=True)
 def update_squad_SR_winrate(squadID, puuIDList, db):
     dataBuilder = db \
                     .document(u'TheSquad/SquadID') \
@@ -959,10 +851,20 @@ def update_squad_SR_winrate(squadID, puuIDList, db):
                     .document(u'TheSquad/SquadID') \
                     .collection(squadID) \
                     .document(u'SquadData')
-    dataBuilder.set({u'SR_matchesLost': srTotalLost,
-                     u'SR_matchesPlayed': srTotalPlayed,
-                     u'SR_matchesWon': srTotalWon,
-                     u'SR_winrate': srWinrate}, merge=True)
+    dataBuilder.set({u'SR_sqMatchesLost': srTotalLost,
+                     u'SR_sqMatchesPlayed': srTotalPlayed,
+                     u'SR_sqMatchesWon': srTotalWon,
+                     u'SR_sqWinrate': srWinrate}, merge=True)
+
+def wrap_up(squadID, db):
+    dataBuilder = db \
+                    .document(u'TheSquad/SquadID') \
+                    .collection(squadID) \
+                    .document(u'SquadData')
+    currDate = get_current_date()
+    currTime = get_current_time()
+    dataBuilder.set({u'dateUpdated': currDate,
+                     u'timeUpdated': currTime}, merge=True)                  
 
 def get_champ_archetype(champName, db):
     champDataList = db.document(u'TheSquad/championData').get()
@@ -970,6 +872,70 @@ def get_champ_archetype(champName, db):
     archetype = champList[champName][1]
     return archetype
 
+def save_exe_meta_data(db):
+    
+    sysDate = date.today()
+    currDateLog = sysDate.strftime("%m%d%Y")
+    sysTime = datetime.now()
+    currTimeLog = sysTime.strftime("%H%M%S")
+
+    dataLogID = (currDateLog + "." + currTimeLog)
+    dataBuilder = db.collection(u'Data').document(dataLogID)
+    dataBuilder.set(EXE_META_DATA)
+"""
+save_squad_data_to_squad(squad, db):
+- This function retrieves data from squad data stored in the database and
+    converts it to a dict. It then extracts the keys from the dict and converts 
+    them to a list and sorts them. 
+- A new dictionary is made with the same key-value pairs but with the keys sorted.
+    The squad in process is then updated with the newly calculated data.
+
+    Parameters:
+    param1 (squad obj.): The full squad object reference
+    param2 (db obj.): Firestore database pointer and controller
+
+"""
+def save_squad_data_to_squad(squad, db):
+    squadData = db \
+            .document(u'TheSquad/SquadID') \
+            .collection(squad.get_squad_id()) \
+            .document(u'SquadData')
+    squadDataList = squadData.get().to_dict()
+    metricsList = list(squadDataList.keys())
+    metricsList.sort()
+    sortedDataList = {i: squadDataList[i] for i in metricsList}
+    squad.set_squad_data(sortedDataList)
+
+def is_update_necessary(squad):
+    squadID = squad.get_squad_id()
+    db = firestore.client()
+    dataBuilder = db \
+                    .document(u'TheSquad/SquadID') \
+                    .collection(squadID) \
+                    .document(u'SquadData')
+    sqData = dataBuilder.get().to_dict()
+    dateUpdated = sqData["dateUpdated"] if "dateUpdated" in sqData else None
+    timeUpdated = sqData["timeUpdated"] if "timeUpdated" in sqData else None
+    if dateUpdated is None or timeUpdated is None:
+        return True
+    
+    current_date = get_current_date()
+    if dateUpdated != current_date:
+        return True
+    
+    # If the dates are the same, compare times
+    stored_time = datetime.strptime(timeUpdated, "%H:%M:%S")
+    current_time = datetime.strptime(get_current_time(), "%H:%M:%S")
+    time_difference = current_time - stored_time
+
+    # Fashioned this way so the "time period" can easily be changed
+    # 20 minutes is a decent standard for most League of Legends Games
+    if time_difference > timedelta(minutes=20):
+        return True
+    else:
+        save_squad_data_to_squad(squad, db)
+    # ELSE
+    return False
 
 # Usage - Reset data individual member data points and readStatus of each
 #         match to FALSE. This doubles as a means to cleanly add data points
@@ -1023,5 +989,80 @@ def clear_all_member_data_sets(squadID, memberInfo, db):
                     .collection(squadID) \
                     .document(u'SquadData')
     squadBuilder.set(SQUAD_DATA, merge=True)
-    
 
+# Helper methods to sift through the stored match list and update info
+def retrieve_ARAM_db_match_list(squadID):
+    #Initiate Firebase session
+    db = firestore.client()
+    savedSquadARAMList = []
+    sharedARAMList = db \
+                .document(u'TheSquad/SquadID') \
+                .collection(squadID) \
+                .document(u'SharedMatchLists') \
+                .collection(u'SharedARAMMatchList') \
+                .stream()
+    for matchID in sharedARAMList:
+        if(matchID.id != "NA_TEMP"):
+            savedSquadARAMList.append(matchID.id)
+    print(savedSquadARAMList)
+    return savedSquadARAMList
+def ARAM_match_list_data_repair(squadID, puuIDList, repairedMatchList):
+    db = firestore.client()
+    for matchID in repairedMatchList:
+        gameMode = repairedMatchList[matchID]['gameMode']
+        gameDuration = repairedMatchList[matchID]['gameDuration']
+        if (gameMode == 'ARAM'):
+            matchDataBuilder = db \
+                        .document(u'TheSquad/SquadID') \
+                        .collection(squadID) \
+                        .document(u'SharedMatchLists') \
+                        .collection(u'SharedARAMMatchList') \
+                        .document(matchID)
+            newMatchData = {u'gameDuration' : gameDuration,
+                            u'gameMode': gameMode,
+                            u'readStatus': True}
+            newMatchData['enemyTeam'] = repairedMatchList[matchID]['enemyTeam']
+            for puuID in puuIDList:
+                    newMatchData[puuID] = [repairedMatchList[matchID][puuID]['championName'], 
+                                           repairedMatchList[matchID][puuID]['win']]
+            matchDataBuilder.set(newMatchData, merge=True)
+
+# 24-Hour Clock - "00:00:00"
+def get_current_time():
+    sysTime = datetime.now()
+    currTime = sysTime.strftime("%H:%M:%S")
+    return currTime
+# Natural Date - "00.00.0000"
+def get_current_date():
+    sysDate = date.today()
+    currDate = sysDate.strftime("%m.%d.%Y")
+    return currDate
+
+
+# Helper method to help developer add champions and their associated data
+def add_champ_data():
+    # Initialize connection to database
+    #firebase_admin.initialize_app(cred)
+    db = firestore.client()
+
+    # Begin user input section
+    addNewChamp = True
+    print("***Begin champion adding protocol***")
+    while addNewChamp:
+        newChamp = input('Champion Name: ')
+        print("Options: [Top-> 1] [Jungle-> 2] [Mid-> 3] [Bottom-> 4] [Support-> 5] ")
+        mostCommonPosition = int(input('Most Common Position: '))
+        print("Options: [Assasin-> 6] [Fighter-> 7] [Mage-> 8]\n"
+              "         [Marksman-> 9] [Support-> 10] [Tank-> 11]")
+        primaryChampRole = int(input('Primary Role: '))
+        print("Options: [Assasin-> 6] [Fighter-> 7] [Mage-> 8]\n"
+              "         [Marksman-> 9] [Support-> 10] [Tank-> 11]\n"
+              "         [Enchanter-> 12] [Juggernaut-> 13] [Crowd Control-> 14]")
+        secondaryChampRole = int(input('Secondary Role: '))
+        champRef = db.collection(u'TheSquad').document(u'championData')
+        champRef.set({
+            newChamp: [mostCommonPosition, primaryChampRole, secondaryChampRole]
+        }, merge=True)
+        continueCheck = input("Continue? (y/n): ")
+        if continueCheck != 'y':
+            addNewChamp = False

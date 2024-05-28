@@ -9,9 +9,6 @@ from app_util import *
 
 # TO RUN LOCALLY: python -m flask run   
 
-# from datetime import datetime --> Now imported from firebase module
-# from ts_riot_api import KEY --> KEYS are now setup as environment vars
-
 # Establish reference name for Flask
 app = Flask(__name__)
 
@@ -20,18 +17,18 @@ riot_key = retrieve_riot_api_key()
 #####################################################
 
 ############### INITIALIZING FIREBASE ###############
-print("Updating Firebase Credentials...")
+# print("Updating Firebase Credentials...")
 update_firebase_cred()
-print("Initializing Firebase")
+# print("Initializing Firebase")
 initialize_firebase()
-print("Clearing Firebase Credentials")
+# print("Clearing Firebase Credentials")
 clear_firebase_cred()
 ####################################################
 
 @app.route("/")
 def index():
-    return render_template('index.html')
-    #return "WORK IN PROGRESS... This will eventually have API usage instructions"
+    return render_template('home.html')
+    #return base webpage
 
 @app.route("/hello/")
 def hello():
@@ -39,12 +36,12 @@ def hello():
     squad1.ARAM_match_data_repair(TEST_SQUAD_LIST_01, riot_key)
     return "Hello!"
 
-# Usage: www.thesquadapi.com/repair-match-data/?p1=<name>&p2=<name>&...
+# Usage: www.thesquad-api.com/repair-match-data/?p1=<name>&p2=<name>&...
 # 3MAN LOCAL --> 
-# localhost:5000/repair-match-data/?p0=PureLunar%23NA1&p1=La%20Migra%20Oficial%236362&p2=Serandipityyy%23NA1
-# localhost:5000/repair-match-data/?p0=Chrispychickn25%23NA1&p1=PureLunar%23NA1&p2=Serandipityyy%23NA1
-@app.route("/repair-match-data/")
-def repair_match_data():
+# localhost:5000/repair-match-data-ARAM/?p0=PureLunar%23NA1&p1=La%20Migra%20Oficial%236362&p2=Serandipityyy%23NA1
+# localhost:5000/repair-match-data-ARAM/?p0=Chrispychickn25%23NA1&p1=PureLunar%23NA1&p2=Serandipityyy%23NA1
+@app.route("/repair-match-data-ARAM/")
+def repair_match_data_ARAM():
     p0 = request.args.get("p0", default="N/A", type=str)
     p1 = request.args.get("p1", default="N/A", type=str)
     p2 = request.args.get("p2", default="N/A", type=str)
@@ -60,30 +57,29 @@ def repair_match_data():
 
     return "repair was succesful"
 
-# Usage: www.thesquadapi.com/get-player-info/<summoner_name>
+# Usage: www.thesquad-api.com/get-player-info/<summonerName>
 # Ex: localhost:5000/get-player-info/Chrispychickn25
-@app.route("/get-player-info/<summoner_name>")
-def get_player_info(summoner_name):
-    api_url_summName = "https://na1.api.riotgames.com/lol/summoner/v4/summoners/by-name/" + summoner_name
+@app.route("/get-player-info/<summonerName>")
+def get_player_info(summonerName):
+    api_url_summName = "https://na1.api.riotgames.com/lol/summoner/v4/summoners/by-name/" + summonerName
     api_url_plus_key = api_url_summName + '?api_key=' + riot_key
     request_resp = requests.get(api_url_plus_key)
     summ_info = request_resp.json()
 
     player_info = {
-        "name": summoner_name,
+        "name": summonerName,
         "acctID": summ_info['accountId'],
         "id": summ_info['id'],
         "lvl":  str(summ_info['summonerLevel']),
         "puuID": summ_info['puuid']  
     }
-    #player_info_json = json.dumps(player_info)
     return jsonify(player_info), 200
 
-# Usage: www.thesquadapi.com/get-player-info/by-riot-id/<riot_id>/?tagline=<string>
+# Usage: www.thesquad-api.com/get-player-info/by-riot-id/<riot_id>/?tagline=<string>
 # Ex: localhost:5000/get-player-info/by-riot-id/Chrispychickn25/?tagline=NA1
 @app.route("/get-player-info/by-riot-id/<riot_id>/")
 def get_player_info_riotID(riot_id):
-    tagline = request.args.get("tagline", default="20", type=str)
+    tagline = request.args.get("tagline", default="NA1", type=str)
     api_url_riot_id = "https://americas.api.riotgames.com/riot/account/v1/accounts/by-riot-id/" + riot_id
     api_url_plus_key = api_url_riot_id + "/" + tagline + '?api_key=' + riot_key
  # EX: "https://americas.api.riotgames.com/riot/account/v1/accounts/by-riot-id/Chrispychickn25/NA1?api_key=...
@@ -96,19 +92,20 @@ def get_player_info_riotID(riot_id):
     request_resp = requests.get(api_url_plus_key)
     summ_info = request_resp.json()
     player_info = {
-        "name": riot_id,
+        "riotID": riot_id,
         "acctID": summ_info['accountId'],
         "id": summ_info['id'],
         "lvl":  str(summ_info['summonerLevel']),
-        "puuID": puuID  
+        "puuID": puuID,  
+        "tagline": tagline
     }
     return jsonify(player_info), 200
 
-# Usage: www.thesquadapi.com/get-match-history/<riot_id>/?count=<num>&tagline=<string>
+# Usage: www.thesquad-api.com/get-match-history/<riot_id>/?count=<num>&tagline=<string>
 @app.route("/get-match-history/<riot_id>/")
 def get_match_history_riotID(riot_id):
     count = request.args.get("count", default="20", type=str)
-    tagline = request.args.get("tagline", default="20", type=str)
+    tagline = request.args.get("tagline", default="NA1", type=str)
     api_url_riot_id = "https://americas.api.riotgames.com/riot/account/v1/accounts/by-riot-id/" + riot_id
     api_url_plus_key = api_url_riot_id + "/" + tagline + '?api_key=' + riot_key
  # EX: "https://americas.api.riotgames.com/riot/account/v1/accounts/by-riot-id/Chrispychickn25/NA1?api_key=...
@@ -122,7 +119,7 @@ def get_match_history_riotID(riot_id):
     player_matchHistory = reqResp.json()
     return player_matchHistory, 200
 
-# Usage: www.thesquadapi.com/get-match-history/<puuid>/?count=<num>
+# Usage: www.thesquad-api.com/get-match-history/<puuid>/?count=<num>
 @app.route("/get-match-history/<puuid>/")
 def get_match_history_puuid(puuid):
     count = request.args.get("count", default="20", type=str)
@@ -132,7 +129,7 @@ def get_match_history_puuid(puuid):
     player_matchHistory = reqResp.json()
     return player_matchHistory, 200
 
-# Usage: www.thesquadapi.com/get-match-data/<matchid>/
+# Usage: www.thesquad-api.com/get-match-data/<matchid>/
 # Local Usage: localhost:5000/get-match-data/NA1_4992595705
 @app.route("/get-match-data/<matchid>/")
 def get_match_data(matchid):
@@ -142,31 +139,19 @@ def get_match_data(matchid):
     matchData = reqResp.json()
     return matchData
 
-# Usage: www.thesquadapi.com/check-squad-id/<squadid>/
+# Usage: www.thesquad-api.com/check-squad-id/<squadid>/
 # Ex: localhost:5000/check-squad-id/8I_GBKGGSh_t_aJU
-@app.route("/check-squad-id/<squadid>")
-def check_squad_id(squadid):
-    #update_firebase_cred()
-    #initialize_firebase()
-    #clear_firebase_cred()
+@app.route("/check-squad-id/<squadID>")
+def check_squad_id(squadID):
     db = firestore.client()
     squadIDList = db.collection(u'TheSquad').document(u'SquadID')
     list = squadIDList.get().to_dict()
-    if squadid in list:
-        return "The squad id: " + squadid + " does exist!"
+    if squadID in list:
+        return jsonify({"squadID": squadID, "wasFound": True}), 200
     else: 
-        return "The squad id: " + squadid + " does NOT exist!"
+        return jsonify({"squadID": squadID, "wasFound": False}), 404
 
-# Usage: www.thesquadapi.com/get-squad-data/?p1=<name>&p2=<name>&...
-# 2MAN LOCAL -->
-# localhost:5000/retrieve-squad-data/?p0=PureLunar%23NA1&p1=La%20Migra%20Oficial%236362
-# 3MAN LOCAL --> 
-# localhost:5000/retrieve-squad-data/?p0=PureLunar%23NA1&p1=La%20Migra%20Oficial%236362&p2=Serandipityyy%23NA1
-# localhost:5000/retrieve-squad-data/?p0=PureLunar&p1=La%20Migra%20Oficial%236362&p2=Serandipityyy
-# localhost:5000/retrieve-squad-data/?p0=Chrispychickn25%23NA1&p1=PureLunar%23NA1&p2=Serandipityyy%23NA1
-# 4MAN LOCAL -->
-# localhost:5000/retrieve-squad-data/
-#           ?p0=Chrispychickn25%23NA1&p1=PureLunar%23NA1&p2=Serandipityyy%23NA1&p3=La%20Migra%20Oficial%236362
+# Usage: www.thesquad-api.com/retrieve-squad-data/?p1=<name>&p2=<name>&...
 @app.route("/retrieve-squad-data/")
 def retrieve_squad_data():
     p0 = request.args.get("p0", default="N/A", type=str)
@@ -177,21 +162,58 @@ def retrieve_squad_data():
 
     inputList = [p0, p1, p2, p3, p4]
     empty = "N/A"
+    # Remove anything from the list that is still "N/A"
     squadMembers = [i for i in inputList if i != empty]
 
+    # It isn't a squad if it's only one person!
+    # Return "Bad Request" response code w/ message
+    if len(squadMembers) <= 1:
+        return jsonify({"squadMembers": squadMembers, 
+                        "message": "Squad not big enough!"}), 400 
+
+    squad = Squad()
+            #MIN_MATCH_HISTORY_COUNT = "0"
+            #DEF_MATCH_HISTORY_COUNT = "20"
+            #MID_MATCH_HISTORY_COUNT = "45"
+            #REC_MATCH_HISTORY_COUNT = "90"
+            #MAX_MATCH_HISTORY_COUNT = "100"
+    squad.initialize(squadMembers, MID_MATCH_HISTORY_COUNT, riot_key)
+    
+    sqDataDICT = squad.get_squad_data()
+    # Create a JSON formatted string of the squad's data set.
+    sqDataJSON = json.dumps(sqDataDICT, indent=2)
+    return sqDataJSON, 200
+
+# Usage: www.thesquad-api.com/retrieve-squad-data-demo/?p1=<name>&p2=<name>&...
+@app.route("/retrieve-squad-data-demo/")
+def retrieve_squad_data_demo():
+    p0 = request.args.get("p0", default="PureLunar#NA1", type=str)
+    p1 = request.args.get("p1", default="La Migra Oficial#6362", type=str)
+    p2 = request.args.get("p2", default="Serandipityyy#NA1", type=str)
+    p3 = request.args.get("p3", default="N/A", type=str)
+    p4 = request.args.get("p4", default="N/A", type=str)
+
+    inputList = [p0, p1, p2, p3, p4]
+    empty = "N/A"
+    # Remove anything from the list that is still "N/A"
+    squadMembers = [i for i in inputList if i != empty]
+
+    # It isn't a squad if it's only one person!
     if len(squadMembers) <= 1:
         return "SquadList isn't big enough!"
 
-    print(squadMembers)
     squad = Squad()
-
+            #MIN_MATCH_HISTORY_COUNT = "0"
+            #DEF_MATCH_HISTORY_COUNT = "20"
+            #REC_MATCH_HISTORY_COUNT = "90"
+            #MAX_MATCH_HISTORY_COUNT = "100"
     squad.initialize(squadMembers, REC_MATCH_HISTORY_COUNT, riot_key)
-    sqData = json.dumps(squad.get_squad_data(), indent=2)
-
-    return sqData, 200
     
+    squad_data = squad.get_squad_data()
+    # Create a JSON formatted string of the squad's data set.
+    return render_template('example-output.html', squad_data=squad_data)
 
-# Usage: www.thesquadapi.com/testenv/
+# Usage: www.thesquad-api.com/testenv/
 @app.route("/testenv/")
 def test_env():
     squad1 = Squad()
@@ -220,11 +242,6 @@ def test_env():
 
     return "CHECK OUTPUT BITCH", 200
 
-
-#@app.route("/generate-new-api-key/<username>")
-#def generate_new_api_key(username):
-#    userkey = generate_new_key(username)
-#    return userkey, 200
 
 if __name__ == "__main__":
     app.run(debug=False)

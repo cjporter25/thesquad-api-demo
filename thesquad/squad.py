@@ -42,31 +42,28 @@ class Squad:
     def initialize(self, memberList, matchHistoryCount, apiKey):
         projStart = time.time()
         squadStart = time.time()
-        # init_firebase()
-        # apiKey = get_riot_api_key()
         self.set_member_list(memberList)
-        #self.show_member_list()
         self.gather_squad_member_info(apiKey)
         self.create_squad_id()
         self.show_squad_ID()
-            #MIN_MATCH_HISTORY_COUNT = "0"
-            #REC_MATCH_HISTORY_COUNT = "90"
-            #MAX_MATCH_HISTORY_COUNT = "100"
-            #DEF_MATCH_HISTORY_COUNT = "20"
-        self.gather_squad_match_history(matchHistoryCount, apiKey)
-        self.find_shared_matches(apiKey)
-        squadEnd = time.time()
-        totalSquadTime = round((squadEnd - squadStart), 2)
-        self.show_shared_match_history()
-        self.show_request_count()
-        EXE_META_DATA['exeTimeSquad'] = totalSquadTime
-        print("***Squad Look-up Was Successful***")
-
-        build_squad(self, projStart)
-        #self.show_squad_data()
-
-        data = json.dumps(EXE_META_DATA, indent=3)
-        print(data)
+        if is_update_necessary(self):
+            self.gather_squad_match_history(matchHistoryCount, apiKey)
+            self.find_shared_matches(apiKey)
+            squadEnd = time.time()
+            totalSquadTime = round((squadEnd - squadStart), 2)
+            self.show_shared_match_history()
+            self.show_request_count()
+            EXE_META_DATA['exeTimeSquad'] = totalSquadTime
+            print("***Squad Look-up Was Successful***")
+            build_squad(self, projStart)
+            data = json.dumps(EXE_META_DATA, indent=3)
+            print(data)
+        else:
+            squadEnd = time.time()
+            totalSquadTime = round((squadEnd - squadStart), 2)
+            EXE_META_DATA['exeTimeSquad'] = totalSquadTime
+            print("***Squad Look-up Was Successful***")
+            print("No need to update at this time! Retrieving Squad Data...")
 
     # Set the member variable "memberList" to equal an incoming list of strings
     def save_squad_member_list(self, newMemberList):

@@ -1,0 +1,93 @@
+<div id="riotID-content" class="content">
+    <h2>RiotID - "Player Data"</h2>
+    <h3>[GET] www.thesquad-api.com/get-player-info/&lt;summonerName&gt;</h3>
+    <ul>
+        <li>
+            
+            <table class="table-parameters">
+                <caption>Input or Query Parameters</caption>
+                <thead>
+                    <tr>
+                        <th>NAME</th>
+                        <th>VALUE</th>
+                        <th>DATA TYPE</th>
+                        <th class="description">DESCRIPTION</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>summonerName</td>
+                        <td>"Chrispychickn25"</td>
+                        <td>string</td>
+                        <td>
+                            When querying for a player by their summoner name, 
+                            their in-game name is required as part of the URL.
+                        </td>
+                    </tr>
+                    <!-- Rows for Input & Query Parameters -->
+                </tbody>
+            </table>
+            <table class="table-response-codes">
+                <caption>Response Codes (NIY = Not Yet Implemented)</caption>
+                <thead>
+                    <tr>
+                        <th>HTTP STATUS CODE</th>
+                        <th class="description">DESCRIPTION</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>200</td>
+                        <td>Success</td>
+                    </tr>
+                    <tr>
+                        <td>400 (NYI)</td>
+                        <td>Bad Request - Invalid parameter, incorrect syntax</td>
+                    </tr>
+                    <tr>
+                        <td>404 (NYI)</td>
+                        <td>Not Found - SummonerName doesn't exist</td>
+                    </tr>
+                    
+                </tbody>
+            </table>
+            <table class="table-response-output">
+                <caption>Response Output</caption>
+                <thead>
+                    <tr>
+                        <th>NAME</th>
+                        <th>DATA TYPE</th>
+                        <th class="description">DESCRIPTION</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>acctID</td>
+                        <td>string</td>
+                        <td>The Account ID, a permanent unique string, connected to the
+                            provided summonerName</td>
+                    </tr>
+                    <tr>
+                        <td>id</td>
+                        <td>string</td>
+                        <td>The ID created by riot, presumably for their servers. This ID
+                            is not pertinent for other functions of the API.</td>
+                    </tr>
+                    <tr>
+                        <td>lvl</td>
+                        <td>long</td>
+                        <td>The current account level of the provided summonerName</td>
+                    </tr>
+                    <tr>
+                        <td>puuID</td>
+                        <td>string</td>
+                        <td>The puuID, is another permanent unique string, connected to
+                            the provided summonerName. Used extensively in gathering match
+                            data and overall database organization.</td>
+                    </tr>
+                </tbody>
+            </table>
+        </li>
+        <!-- Repeat for other items -->
+    </ul>
+</div>

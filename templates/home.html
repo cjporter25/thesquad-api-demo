@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TheSquad - API</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/variables.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/home.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/content.css') }}">
+</head>
+<body>
+    <h1 class="wip">******WORK IN PROGRESS******</h1>
+    <h1 class="website-header">TheSquad - API</h1>
+    <div class="intro-container">
+        <section class="welcome">
+            <h2 class="welcome-head">Welcome!</h2>
+            <p class="welcome-text">
+                [welcome_statement_placeholder]
+            </p>
+        </section>
+        <section class="disclaimer">
+            <h2 class="disclaimer-head">Disclaimer:</h2>
+            <p class="disclaimer-text">
+                [disclaimer_statement_placeholder]
+            </p>
+        </section>
+    </div>
+    <div class="navbar">
+        <a href="#" id="squad-button" data-target="squad-content">Squad</a>
+        <a href="#" id="riotID-button" data-target="riotID-content">RiotID</a>
+        <a href="#" id="match-button" data-target="match-content">Match</a>
+    </div>
+
+    <div id="content-container">
+        <!-- Load route content based on navbar choice -->
+    </div>
+    <script src="{{ url_for('static', filename='js/navbar.js') }}"></script>
+</body>
+</html>

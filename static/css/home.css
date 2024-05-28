@@ -1,0 +1,95 @@
+/* static/css/styles.css */
+
+body {
+    font-family: Arial, sans-serif;
+    background-color: var(--grey-3);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 0;
+}
+
+.website-header,
+.wip {
+    text-align: center;
+    color: var(--gold-4);
+}
+
+.intro-container {
+    
+    width: 75%;
+    max-width: 1000px;
+}
+
+.welcome {
+    width: 100%;
+}
+.welcome-head {
+    color: white;
+    padding: 0 20px;
+}
+.welcome-text{
+    color: white;
+    padding: 0 40px;
+}
+
+.disclaimer {
+    width: 100%;
+}
+.disclaimer-head {
+    color: white;
+    padding: 0 20px;
+}
+.disclaimer-text {
+    color: white;
+    padding: 0 40px;
+}
+
+.navbar {
+    display: flex;
+    width: 85%;
+    max-width: 1000px;
+    border-radius: 10px;
+}
+
+.navbar a {
+    color: var(--gold-1);
+    background-color: var(--hextech-black);
+    padding: 14px 20px;
+    text-align: center;
+    text-decoration: none;
+    flex-grow: 1;
+    border-radius: 10px;
+    margin: 0 20px;
+    
+}
+
+.navbar a:hover {
+    background-color: var(--grey-2);
+    color: var(--gold-2);
+    border-radius: 10px;
+}
+
+.navbar a.active {
+    background-color: var(--blue-4);
+    color: var(--gold-1);
+    /* text-decoration: underline; */
+    border-radius: 10px;
+}
+
+.content {
+    display: none;
+}
+
+.content.active {
+    display: block;
+    padding: 20px;
+    color: var(--grey-1);
+    /* align-items: flex-start; */
+}
+
+#content-container {
+    padding: 20px;
+    width: 75%;
+    max-width: 1000px;
+}

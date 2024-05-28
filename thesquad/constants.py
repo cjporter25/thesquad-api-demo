@@ -108,32 +108,32 @@ MEMBER_DATA = {u'ARAM_matchesLost_Assasin': 0,
                     u'SR_winrate_Tank': 0.00}
 
 SQUAD_DATA = {u'ARAM_matchesLost': 0,
-                u'ARAM_matchesPlayed': 0,
-                u'ARAM_matchesWon': 0,
-                u'ARAM_winrate': 0.00,
-                u'ARAM_highestWinrate_Assasin': ["[player]", 0.00],
-                u'ARAM_highestWinrate_Enchanter': ["[player]", 0.00],
-                u'ARAM_highestWinrate_Fighter': ["[player]", 0.00],
-                u'ARAM_highestWinrate_Mage': ["[player]", 0.00],
-                u'ARAM_highestWinrate_Marksman': ["[player]", 0.00],
-                u'ARAM_highestWinrate_Support': ["[player]", 0.00],
-                u'ARAM_highestWinrate_Tank': ["[player]", 0.00],
-                u'SR_highestWinrateBot': ["[player]", 0.00],
-                u'SR_highestWinrateJung': ["[player]", 0.00],
-                u'SR_highestWinrateMid': ["[player]", 0.00],
-                u'SR_highestWinrateSup': ["[player]", 0.00],
-                u'SR_highestWinrateTop': ["[player]", 0.00],
-                u'SR_highestWinrate_Assasin': ["[player]", 0.00],
-                u'SR_highestWinrate_Enchanter': ["[player]", 0.00],
-                u'SR_highestWinrate_Fighter': ["[player]", 0.00],
-                u'SR_highestWinrate_Mage': ["[player]", 0.00],
-                u'SR_highestWinrate_Marksman': ["[player]", 0.00],
-                u'SR_highestWinrate_Support': ["[player]", 0.00],
-                u'SR_highestWinrate_Tank': ["[player]", 0.00],
-                u'SR_matchesLost': 0,
-                u'SR_matchesPlayed': 0,
-                u'SR_matchesWon': 0,
-                u'SR_winrate': 0.00}
+                u'ARAM_sqMatchesPlayed': 0,
+                u'ARAM_sqMatchesWon': 0,
+                u'ARAM_sqWinrate': 0.00,
+                u'ARAM_sqWinrates_Assasin': ["[player]", 0.00],
+                u'ARAM_sqWinrates_Enchanter': ["[player]", 0.00],
+                u'ARAM_sqWinrates_Fighter': ["[player]", 0.00],
+                u'ARAM_sqWinrates_Mage': ["[player]", 0.00],
+                u'ARAM_sqWinrates_Marksman': ["[player]", 0.00],
+                u'ARAM_sqWinrates_Support': ["[player]", 0.00],
+                u'ARAM_sqWinrates_Tank': ["[player]", 0.00],
+                u'SR_sqWinratesBot': ["[player]", 0.00],
+                u'SR_sqWinratesJung': ["[player]", 0.00],
+                u'SR_sqWinratesMid': ["[player]", 0.00],
+                u'SR_sqWinratesSup': ["[player]", 0.00],
+                u'SR_sqWinratesTop': ["[player]", 0.00],
+                u'SR_sqWinrates_Assasin': ["[player]", 0.00],
+                u'SR_sqWinrates_Enchanter': ["[player]", 0.00],
+                u'SR_sqWinrates_Fighter': ["[player]", 0.00],
+                u'SR_sqWinrates_Mage': ["[player]", 0.00],
+                u'SR_sqWinrates_Marksman': ["[player]", 0.00],
+                u'SR_sqWinrates_Support': ["[player]", 0.00],
+                u'SR_sqWinrates_Tank': ["[player]", 0.00],
+                u'SR_sqMatchesLost': 0,
+                u'SR_sqMatchesPlayed': 0,
+                u'SR_sqMatchesWon': 0,
+                u'SR_sqWinrate': 0.00}
 
 CHAMP_DATA_VALUES = {  1: "Top",         2: "Jungle",
                        3: "Mid",         4: "Bottom",
@@ -199,9 +199,11 @@ NON_VALID_MEM_LIST_1 = ["Name0"]
 NON_VALID_MEM_LIST_6 = ["Name0", "Name0", "Name0", "Name0", "Name0", "Name0"]
 
 MIN_MATCH_HISTORY_COUNT = "0"
+DEF_MATCH_HISTORY_COUNT = "20"
+MID_MATCH_HISTORY_COUNT = "45"
 REC_MATCH_HISTORY_COUNT = "90"
 MAX_MATCH_HISTORY_COUNT = "100"
-DEF_MATCH_HISTORY_COUNT = "20"
+
 
 
 

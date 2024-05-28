@@ -1,0 +1,25 @@
+/* static/css/variables.css */
+
+:root {
+    /* "--" required syntax for custom variables */
+    --blue-1: #CDFAFA;
+    --blue-2: #0AC8B9;
+    --blue-3: #0397AB; /* Squad Program */
+    --blue-4: #005A82; /* Squad Object */
+    --blue-5: #0A323C; /* Firebase Connection */
+    --blue-6: #091428;
+    --blue-7: #0A1428;
+    --gold-1: #F0E6D2;
+    --gold-2: #C8AA6E;
+    --gold-3: #C8AA6E; /* Riot JSON Data Points */
+    --gold-4: #C89B3C; /* Riot API */
+    --gold-5: #785A28;
+    --gold-6: #463714;
+    --gold-7: #32281E;
+    --grey-1: #A09B8C;
+    --grey-1-5: #5B5A56;
+    --grey-2: #3C3C41;
+    --grey-3: #1E2328;
+    --grey-cool: #1E282D; /* Firestore Database */
+    --hextech-black: #010A13;
+}

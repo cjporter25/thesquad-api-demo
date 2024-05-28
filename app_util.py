@@ -80,7 +80,8 @@ def update_firebase_cred():
         outfile.close()
 def initialize_firebase():
     # Certificate can be a "file path" or a "dict containing the parsed file contents"
-    # As a result, Firebase is unable to use a temporary file.
+    # As a result, Firebase is unable to use a temporary file and must initialize from
+    #   a file in the main directory
     cred = credentials.Certificate('firebase.json')
     try:
         firebase_admin.get_app()
