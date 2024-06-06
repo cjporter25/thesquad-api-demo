@@ -101,15 +101,24 @@ def get_player_info_riotID(riot_id):
     }
     return jsonify(player_info), 200
 
-# Usage: www.thesquad-api.com/get-match-history/<riot_id>/?count=<num>&tagline=<string>
+# Usage: www.thesquad-api.com/get-match-history/<riot_id>/?tagline=<string>&count=<num>
 @app.route("/get-match-history/<riot_id>/")
 def get_match_history_riotID(riot_id):
-    count = request.args.get("count", default="20", type=str)
     tagline = request.args.get("tagline", default="NA1", type=str)
+    count = request.args.get("count", default="20", type=str)
+    if not is_count_valid(count):
+        return jsonify({"count": count,
+                        "code": "400", 
+                        "message": "The input for <count> was not valid"}), 400
     api_url_riot_id = "https://americas.api.riotgames.com/riot/account/v1/accounts/by-riot-id/" + riot_id
     api_url_plus_key = api_url_riot_id + "/" + tagline + '?api_key=' + riot_key
  # EX: "https://americas.api.riotgames.com/riot/account/v1/accounts/by-riot-id/Chrispychickn25/NA1?api_key=...
     request_resp = requests.get(api_url_plus_key)
+    if request_resp.status_code == 404:
+        return jsonify({"riot_id": riot_id,
+                        "tagline": tagline,
+                        "code": "404", 
+                        "message": "The provided riot_id + tagline could not be found!"}), 404
     summ_info = request_resp.json()
     puuID = summ_info['puuid']
 
@@ -168,7 +177,8 @@ def retrieve_squad_data():
     # It isn't a squad if it's only one person!
     # Return "Bad Request" response code w/ message
     if len(squadMembers) <= 1:
-        return jsonify({"squadMembers": squadMembers, 
+        return jsonify({"squadMembers": squadMembers,
+                        "code": "400", 
                         "message": "Squad not big enough!"}), 400 
 
     squad = Squad()
@@ -180,13 +190,17 @@ def retrieve_squad_data():
     squad.initialize(squadMembers, MID_MATCH_HISTORY_COUNT, riot_key)
     
     sqDataDICT = squad.get_squad_data()
+    # statistically_significant_winrates(sqDataDICT)
     # Create a JSON formatted string of the squad's data set.
     sqDataJSON = json.dumps(sqDataDICT, indent=2)
     return sqDataJSON, 200
 
 # Usage: www.thesquad-api.com/retrieve-squad-data-demo/?p1=<name>&p2=<name>&...
+# Usage: www.thesquad-api.com/demo/?p1=<name>&p2=<name>&...
+# SAME FUNCTION AS ABOVE BUT WITH A SHORTER ROUTE
 @app.route("/retrieve-squad-data-demo/")
-def retrieve_squad_data_demo():
+@app.route("/demo/")
+def demo():
     p0 = request.args.get("p0", default="PureLunar#NA1", type=str)
     p1 = request.args.get("p1", default="La Migra Oficial#6362", type=str)
     p2 = request.args.get("p2", default="Serandipityyy#NA1", type=str)
@@ -209,12 +223,14 @@ def retrieve_squad_data_demo():
             #MAX_MATCH_HISTORY_COUNT = "100"
     squad.initialize(squadMembers, REC_MATCH_HISTORY_COUNT, riot_key)
     
-    squad_data = squad.get_squad_data()
+    squadData = squad.get_squad_data()
+    statistically_significant_winrates(squadData)
     # Create a JSON formatted string of the squad's data set.
-    return render_template('example-output.html', squad_data=squad_data)
+    return render_template('squad-data-demo.html', squad_data=squadData)
+
 
 # Usage: www.thesquad-api.com/testenv/
-@app.route("/testenv/")
+"""@app.route("/testenv/")
 def test_env():
     squad1 = Squad()
     squad1Start = time.time()
@@ -241,7 +257,6 @@ def test_env():
     print("Squad 2 Time: " + str(totalSquad2Time))
 
     return "CHECK OUTPUT BITCH", 200
-
-
+"""
 if __name__ == "__main__":
     app.run(debug=False)

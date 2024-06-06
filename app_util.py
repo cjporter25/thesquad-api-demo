@@ -120,3 +120,13 @@ def is_mem_name_valid(name):
         return True
     else:
         return False
+
+def is_count_valid(inputCount):
+    try:
+        # Try converting the string to an integer
+        num = int(inputCount)
+        # Check if the converted number is a whole number (integer)
+        return True
+    except ValueError:
+        # If conversion fails, it's not a valid whole number
+        return False

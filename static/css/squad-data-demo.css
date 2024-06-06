@@ -1,0 +1,74 @@
+
+
+body {
+    font-family: Arial, sans-serif;
+    background-color: var(--grey-3);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 0;
+    width: 100;
+}
+
+h1, h2{
+    color: var(--gold-4);
+    font-size: 2.5vw; /* Adjust font size based on viewport width */
+}
+
+.details {
+    color: var(--gold-1);
+    width: 80%;
+    font-size: 1.2vw; /* Adjust font size based on viewport width */
+}
+
+.important-points{
+    color: var(--gold-1);
+    width: 80%;
+    font-size: 1.2vw; /* Adjust font size based on viewport width */
+    word-break: break-word;
+    overflow-wrap: break-word;
+}
+
+table {
+    width: 80%;
+    border-collapse: collapse;
+    margin-bottom: 20px;
+    color: white;
+    font-size: 1.5vw; /* Adjust font size based on viewport width */
+}
+th, td {
+    border: 1px solid var(--grey-1);
+    padding: 8px;
+    text-align: center;
+}
+/* "th" is the table head row */
+th {
+    background-color: var(--grey-2);
+    text-transform: uppercase;
+}
+
+
+
+/* Media query for smaller screens */
+@media (max-width: 768px) {
+    body {
+        width: 100%;
+    }
+    h1, h2 {
+        font-size: 4vw; /* Increase font size for smaller screens */
+    }
+
+    .details, .important-points {
+        font-size: 2.5vw; 
+    }
+
+    table {
+        width: 90%; /* Make table close to full width on smaller screens */
+        font-size: 2.5vw;
+    }
+
+    th, td {
+        font-size: 3vw; /* Increase font size for smaller screens */
+        padding: 12px; /* Increase padding for better touch support */
+    }
+}

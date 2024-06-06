@@ -3,9 +3,11 @@
 #           information, add to what's already there, or analyze data
 from thesquad.riot_api import *
 from thesquad.firebase import *
+from thesquad.analysis import *
 
 import time
 import json
+from itertools import combinations
 
 class Squad:
     # Intializer used for testing a fully pre-built test squad object
@@ -62,8 +64,17 @@ class Squad:
             squadEnd = time.time()
             totalSquadTime = round((squadEnd - squadStart), 2)
             EXE_META_DATA['exeTimeSquad'] = totalSquadTime
+            self.show_request_count()
             print("***Squad Look-up Was Successful***")
             print("No need to update at this time! Retrieving Squad Data...")
+
+    def gather_internal_squad_lists(self):
+        memberList = self.get_member_list
+        squadOptions = []
+        for size in range(2, len(memberList) + 1):
+            newGroup = list(combinations(memberList, size))
+            squadOptions.extend(newGroup)
+        return squadOptions
 
     # Set the member variable "memberList" to equal an incoming list of strings
     def save_squad_member_list(self, newMemberList):
@@ -132,12 +143,13 @@ class Squad:
                     wholeSquadPresent = False
             # If every squad member was present in this match
             if (wholeSquadPresent == True):
-                match_stuff = get_match(matchID, apiKey)
+                squadTeamComp = []
+                matchStuff = get_match(matchID, apiKey)
                 self.set_riot_request_count(self.get_riot_request_count() + 1) #Increment count
                 # Save specific match's info
-                matchInfo = match_stuff['info']
+                matchInfo = matchStuff['info']
                 # Save specific match's metadata
-                matchMetaData = match_stuff['metadata']
+                matchMetaData = matchStuff['metadata']
                 # Pull match data that applies to all players, i.e., game duration and mode
                 newMatchData = {'gameDuration' : matchInfo['gameDuration'],
                                 'gameMode' : matchInfo['gameMode'],
@@ -148,13 +160,17 @@ class Squad:
                     playerMatchInfo = get_player_match_info(matchInfo, matchMetaData, puuID)
                     # Add a new dictionary object as the value for the puuID being adde. ARAM
                     #   matches will only save the championName and win variables
-                    newMatchData[puuID] = {'championName' : playerMatchInfo['championName'],
+                    champPlayed = playerMatchInfo['championName']
+                    newMatchData[puuID] = {'championName' : champPlayed,
                                            'individualPosition' : playerMatchInfo['individualPosition'],
                                            'lane' : playerMatchInfo['lane'],
                                            'role' : playerMatchInfo['role'],
                                            'teamPosition' : playerMatchInfo['teamPosition'],
                                            'win' : playerMatchInfo['win']}
-                newMatchData['enemyTeam'] = get_enemy_team_info(matchInfo, matchMetaData, puuIDList)
+                    squadTeamComp.append(champPlayed)
+                newMatchData['enemyTeamComp'] = get_enemy_team_comp(matchInfo, matchMetaData, puuIDList)
+                newMatchData['fullTeamComp'] = get_full_friendly_team_comp(matchInfo, matchMetaData, puuIDList)
+                newMatchData['squadTeamComp'] = squadTeamComp
                 # Save newly gathered info about the current shared match
                 newSharedMatchList[matchID] = newMatchData
         # Save match
@@ -229,33 +245,39 @@ class Squad:
         self.gather_squad_member_info(apiKey)
         self.create_squad_id()
         puuIDList = self.retrieve_puuID_list()
-        squadID = self.get_squad_id()        
+        squadID = self.get_squad_id() 
+        print(squadID)  
+        matchIDList = retrieve_ARAM_db_match_list(self.get_squad_id())     
         repairedMatchList = {}
-
-        matchIDList = retrieve_ARAM_db_match_list(self.get_squad_id())
+        
 
         for matchID in matchIDList:
-            time.sleep(2)
+            time.sleep(3)
+            squadTeamComp = []
             print("Stored Match: " + matchID)
-            match_stuff = get_match(matchID, apiKey)
-            if 'info' not in match_stuff or 'status' in match_stuff:
+            matchStuff = get_match(matchID, apiKey)
+            if 'info' not in matchStuff or 'status' in matchStuff:
                 print("Match: " + matchID + " was too old...")
                 continue
             print("Match: " + matchID + " is still good. Pulling data...")
-            matchMetaData = match_stuff['metadata']
-            matchInfo = match_stuff['info']
+            matchMetaData = matchStuff['metadata']
+            matchInfo = matchStuff['info']
             newMatchData = {'gameDuration' : matchInfo['gameDuration'],
                             'gameMode' : matchInfo['gameMode'],
                             }
             for puuID in puuIDList:
                 playerMatchInfo = get_player_match_info(matchInfo, matchMetaData, puuID)
-                newMatchData[puuID] = {'championName' : playerMatchInfo['championName'],
+                champPlayed = playerMatchInfo['championName']
+                newMatchData[puuID] = {'championName' : champPlayed,
                                            'individualPosition' : playerMatchInfo['individualPosition'],
                                            'lane' : playerMatchInfo['lane'],
                                            'role' : playerMatchInfo['role'],
                                            'teamPosition' : playerMatchInfo['teamPosition'],
-                                           'win' : playerMatchInfo['win']}  
-            newMatchData['enemyTeam'] = get_enemy_team_info(matchInfo, matchMetaData, puuIDList)
+                                           'win' : playerMatchInfo['win']}
+                squadTeamComp.append(champPlayed)  
+            newMatchData['enemyTeamComp'] = get_enemy_team_comp(matchInfo, matchMetaData, puuIDList)
+            newMatchData['fullTeamComp'] = get_full_friendly_team_comp(matchInfo, matchMetaData, puuIDList)
+            newMatchData['squadTeamComp'] = squadTeamComp
             repairedMatchList[matchID] = newMatchData
         ARAM_match_list_data_repair(squadID, puuIDList, repairedMatchList)
 

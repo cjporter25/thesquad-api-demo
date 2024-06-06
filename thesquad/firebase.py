@@ -2,6 +2,7 @@
 from datetime import datetime, date, timedelta
 from operator import itemgetter
 import time
+import pytz
 
 # Firebase Imports
 import firebase_admin
@@ -239,7 +240,7 @@ def add_shared_ARAM_match_history(squadID, sharedMatchHistory, puuIDList, db):
                 playerInfo = [matchData[puuID]['championName'], 
                               matchData[puuID]['win']]
                 newMatchData[puuID] = playerInfo
-                newMatchData['enemyTeam'] = matchData['enemyTeam']
+                newMatchData['enemyTeamComp'] = matchData['enemyTeamComp']
             matchListBuilder.set(newMatchData, merge=True)  
 def add_shared_SR_match_history(squadID, sharedMatchHistory, puuIDList, db):
     for matchID, matchData in sharedMatchHistory.items():
@@ -314,7 +315,7 @@ def update_shared_ARAM_match_list(squadID, sharedMatchHistory, puuIDList, db):
         # If the match has not been added yet, meaning the current matchID has not
         #   yet been saved to the database, go through the adding algorithm
         if(matchInDatabase == False):
-            #print(enemyTeam)
+            #print(enemyTeamComp)
             gameMode = sharedMatchHistory[localMatchID]['gameMode']
             gameDuration = sharedMatchHistory[localMatchID]['gameDuration']
             if (gameMode == "ARAM"):
@@ -332,7 +333,7 @@ def update_shared_ARAM_match_list(squadID, sharedMatchHistory, puuIDList, db):
                     playerInfo = [sharedMatchHistory[localMatchID][puuID]['championName'], 
                                   sharedMatchHistory[localMatchID][puuID]['win']]
                     newMatchData[puuID] = playerInfo
-                newMatchData['enemyTeam'] = sharedMatchHistory[localMatchID]['enemyTeam']
+                newMatchData['enemyTeamComp'] = sharedMatchHistory[localMatchID]['enemyTeamComp']
                 matchListBuilder.set(newMatchData, merge=True)
     print("     Number ARAM matches already added from shared list-->" + str(len(matchesAlreadyAdded)))
     EXE_META_DATA['sharedARAMMatchesAlreadyPresent'] = len(matchesAlreadyAdded)
@@ -929,8 +930,8 @@ def is_update_necessary(squad):
     time_difference = current_time - stored_time
 
     # Fashioned this way so the "time period" can easily be changed
-    # 20 minutes is a decent standard for most League of Legends Games
-    if time_difference > timedelta(minutes=20):
+    # 30 minutes is a decent standard for most League of Legends Games
+    if time_difference > timedelta(minutes=30):
         return True
     else:
         save_squad_data_to_squad(squad, db)
@@ -1021,7 +1022,9 @@ def ARAM_match_list_data_repair(squadID, puuIDList, repairedMatchList):
             newMatchData = {u'gameDuration' : gameDuration,
                             u'gameMode': gameMode,
                             u'readStatus': True}
-            newMatchData['enemyTeam'] = repairedMatchList[matchID]['enemyTeam']
+            newMatchData['enemyTeamComp'] = repairedMatchList[matchID]['enemyTeamComp']
+            newMatchData['fullTeamComp'] = repairedMatchList[matchID]['fullTeamComp']
+            newMatchData['squadTeamComp'] = repairedMatchList[matchID]['squadTeamComp']
             for puuID in puuIDList:
                     newMatchData[puuID] = [repairedMatchList[matchID][puuID]['championName'], 
                                            repairedMatchList[matchID][puuID]['win']]
@@ -1029,8 +1032,15 @@ def ARAM_match_list_data_repair(squadID, puuIDList, repairedMatchList):
 
 # 24-Hour Clock - "00:00:00"
 def get_current_time():
-    sysTime = datetime.now()
-    currTime = sysTime.strftime("%H:%M:%S")
+    # Get the current time in UTC
+    sysTime = datetime.now(pytz.utc)
+    
+    # Convert to Central U.S. time zone
+    central_tz = pytz.timezone('America/Chicago')
+    central_time = sysTime.astimezone(central_tz)
+    
+    # Format the time in HH:MM:SS
+    currTime = central_time.strftime("%H:%M:%S")
     return currTime
 # Natural Date - "00.00.0000"
 def get_current_date():

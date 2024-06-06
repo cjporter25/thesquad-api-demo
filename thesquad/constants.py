@@ -107,7 +107,7 @@ MEMBER_DATA = {u'ARAM_matchesLost_Assasin': 0,
                     u'SR_winrate_Support': 0.00,
                     u'SR_winrate_Tank': 0.00}
 
-SQUAD_DATA = {u'ARAM_matchesLost': 0,
+SQUAD_DATA = {u'ARAM_sqMatchesLost': 0,
                 u'ARAM_sqMatchesPlayed': 0,
                 u'ARAM_sqMatchesWon': 0,
                 u'ARAM_sqWinrate': 0.00,

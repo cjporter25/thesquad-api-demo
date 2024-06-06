@@ -105,7 +105,7 @@ def get_player_match_info(matchInfo, matchMetaData, playerPuuID):
     #Return all match specific metrics for this player
     return matchInfo['participants'][pListPosition]
 
-def get_enemy_team_info(matchInfo, matchMetaData, puuIDList):
+def get_enemy_team_comp(matchInfo, matchMetaData, puuIDList):
     pList = matchMetaData['participants']
     enemyTeamComp = []
     squadIsBottom = True
@@ -129,4 +129,26 @@ def get_enemy_team_info(matchInfo, matchMetaData, puuIDList):
     #print(enemyTeamComp)
     return enemyTeamComp
 
+def get_full_friendly_team_comp(matchInfo, matchMetaData, puuIDList):
+    pList = matchMetaData['participants']
+    fullTeamComp = []
+    squadIsBottom = True
+    for puuID in puuIDList:
+        pListPosition = pList.index(puuID)
+        if pListPosition >= 5:
+            squadIsBottom = False
+    if squadIsBottom:
+        # Our squad is on the bottom of the list of participants, therefore,
+        #   the friendly team comp resides in indexes 0-4
+        for pListPosition in range(5):
+            currFriendlyInfo = matchInfo['participants'][pListPosition]
+            fullTeamComp.append(currFriendlyInfo['championName'])
+    else:
+        # Our squad is on the top of the list of participants, therefore,
+        #   the friendly team comp resides in indexes 5-9
+        for pListPosition in range(5, 10):
+            currFriendlyInfo = matchInfo['participants'][pListPosition]
+            fullTeamComp.append(currFriendlyInfo['championName'])
+    
+    return fullTeamComp
 

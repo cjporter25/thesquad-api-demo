@@ -8,7 +8,8 @@ Language & Frameworks:
 Python, Flask, Firebase Cloudstore
 
 Hosting Platform:
-Heroku
+Heroku - App Function
+Ionos - Website & API domain
 
 Local Testing Platform:
 Postman

@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Squad Data</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/variables.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/squad-data-demo.css') }}">
+</head>
+<body>
+    <h1>TheSquad - Example Output</h1>
+    <p class="details">This is the demo URL for the API route, www.thesquad-api.com/retrieve-squad-data/... 
+        Below is an example of the data points a user would receive after making a call. The output 
+        will include squad data for a currently tracked 3 player squad: PureLunar#NA1, La Migra Oficial#6362, and Serandipityyy#NA1. 
+        Yes, they do play a lot of ARAM! :D
+    </p>
+    <ul class="important-points">
+        <li>Base URL: <a href="http://www.thesquad-api.com" target="_blank">www.thesquad-api.com</a></li>
+        <li>API Route: /retrieve-squad-data/?p1=<name>&p2=<name>&...</li>
+        <li>Description: Returns squad data in JSON format.</li>
+        <li>Full URL Used: www.thesquad-api.com/retrieve-squad-data/?p0=PureLunar%23NA1&p1=La%20Migra%20Oficial%236362&p2=Serandipityyy%23NA1</li>
+    </ul>
+    <h2>Squad Data</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Key</th>
+                <th>Value</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for key, value in squad_data.items() %}
+            <tr>
+                <td class="key">{{ key }}</td>
+                <td class="value">{{ value }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+</html>
