@@ -1,5 +1,3 @@
-import requests
-
 from flask import Flask, request, jsonify, render_template
 
 from app_util import *
@@ -15,6 +13,11 @@ app = Flask(__name__)
 #### RETURNING STORED KEYS "_" characters to "-" ####
 riot_key = retrieve_riot_api_key()
 #####################################################
+
+#### Retrieve Lockfile (live client port info) ####
+
+###################################################
+
 
 ############### INITIALIZING FIREBASE ###############
 # print("Updating Firebase Credentials...")
@@ -33,7 +36,7 @@ def index():
 @app.route("/hello/")
 def hello():
     squad1 = Squad()
-    squad1.ARAM_match_data_repair(TEST_SQUAD_LIST_01, riot_key)
+    #squad1.ARAM_match_data_repair(TEST_SQUAD_LIST_01, riot_key)
     return "Hello!"
 
 # Usage: www.thesquad-api.com/repair-match-data/?p1=<name>&p2=<name>&...
@@ -187,10 +190,10 @@ def retrieve_squad_data():
             #MID_MATCH_HISTORY_COUNT = "45"
             #REC_MATCH_HISTORY_COUNT = "90"
             #MAX_MATCH_HISTORY_COUNT = "100"
-    squad.initialize(squadMembers, MID_MATCH_HISTORY_COUNT, riot_key)
+    squad.initialize(squadMembers, REC_MATCH_HISTORY_COUNT, riot_key)
     
     sqDataDICT = squad.get_squad_data()
-    # statistically_significant_winrates(sqDataDICT)
+    # conduct_squad_analysis(sqDataDICT)
     # Create a JSON formatted string of the squad's data set.
     sqDataJSON = json.dumps(sqDataDICT, indent=2)
     return sqDataJSON, 200
@@ -214,7 +217,9 @@ def demo():
 
     # It isn't a squad if it's only one person!
     if len(squadMembers) <= 1:
-        return "SquadList isn't big enough!"
+        return jsonify({"squadMembers": squadMembers,
+                        "code": "400", 
+                        "message": "Squad not big enough!"}), 400 
 
     squad = Squad()
             #MIN_MATCH_HISTORY_COUNT = "0"
@@ -224,10 +229,25 @@ def demo():
     squad.initialize(squadMembers, REC_MATCH_HISTORY_COUNT, riot_key)
     
     squadData = squad.get_squad_data()
-    statistically_significant_winrates(squadData)
+    conduct_squad_analysis(squadData)
     # Create a JSON formatted string of the squad's data set.
     return render_template('squad-data-demo.html', squad_data=squadData)
 
+# http://localhost:5000/get-live-game/
+@app.route("/get-champ-select-data/")
+def get_champ_select_info():
+    
+    response = LOCAL_find_live_client_info()
+    if isinstance(response, str):
+        return response, 400  # Error message
+    
+    portNum = str(response[0])
+    passWord = str(response[1])
+    certPath = "./riotgames.pem"
+    data = LOCAL_get_lcu_data(portNum, passWord, certPath)
+
+
+    return data, 200
 
 # Usage: www.thesquad-api.com/testenv/
 """@app.route("/testenv/")

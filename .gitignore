@@ -2,6 +2,7 @@ __pycache__*
 actionlog.txt
 instructions.txt
 
+/info/*
 
 ts_test.py
 views.py
@@ -12,6 +13,7 @@ mysquad_home.html
 
 .env
 .flaskenv
+*.pem
 
 # Created by https://www.toptal.com/developers/gitignore/api/firebase,python,flask
 # Edit at https://www.toptal.com/developers/gitignore?templates=firebase,python,flask

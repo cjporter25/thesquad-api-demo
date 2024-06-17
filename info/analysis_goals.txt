@@ -80,7 +80,7 @@ Risk Assessment: In decision-making, such as choosing which player to use for a 
     a higher lower bound reduces the risk. It suggests that, at worst, the player's performance will 
     be better than the lower bounds of the other players.
 
-Example Scenario:
+EXAMPLE SCENARIO:
 Consider the confidence intervals for three players with a large range of win rates and sample sizes:
 
 Player A: Win Rate: 0.60, Games: 10, Confidence Interval: [0.30, 0.90]
@@ -94,7 +94,7 @@ Player B has a slightly lower win rate (0.55) but a much narrower confidence int
     Indicating more consistent performance across a larger number of games (200 games).
 Player C has the lowest win rate (0.45) and a moderately wide confidence interval ([0.32, 0.58]).
     This reflects moderate reliability with a moderate sample size (50 games).
-****Interpretation****
+****INTERPRETATION****
 Player A: Despite having the highest win rate, Player A's performance is highly uncertain due to the small 
     sample size. The wide confidence interval suggests that the true win rate could be as low as 0.30 or as high 
     as 0.90, making this player a risky choice.
@@ -135,123 +135,139 @@ bound of the Wilson score interval. This highlights the importance of considerin
 sample size when evaluating player performance.
 
 
-
-
-
-
-Wilson Score Interval
-Purpose: Measures the confidence interval for a player's win rate, providing an estimate of where 
-the true win rate lies based on the number of games played.
-Usage: Helps identify the reliability and consistency of a player's performance.
-Adjusted Win Rate
-Purpose: Adjusts the player's win rate by comparing it to the squad's overall win rate.
-Usage: Highlights whether a player is performing above or below the squad average, providing 
-a relative performance measure.
-Player Contribution
-Purpose: Calculates the player's contribution to the squad's overall performance based on the 
-number of games played.
-Usage: Provides insight into the impact of the player's performance on the squad's success.
-Significance Testing (p-value)
-Purpose: Determines if the player's win rate is statistically significantly different from the 
-squad's overall win rate.
-Usage: Helps identify if the player's performance is an outlier or within the expected range.
-
-Wilson Score Interval
-Purpose: Provides a confidence interval for the player's win rate.
-Interpretation:
-Lower Bound: Represents the minimum win rate we can expect with a high degree of confidence.
-Higher Lower Bound: Indicates more reliable and consistent performance.
-Example: If a player has a Wilson score interval of [0.45, 0.70], we are confident that their true win 
-rate is at least 45%.
-Adjusted Win Rate
-Purpose: Compares the player's win rate to the squad's overall win rate.
-Interpretation:
-Positive Adjusted Win Rate: Indicates the player performs better than the squad average.
-Negative Adjusted Win Rate: Indicates the player performs worse than the squad average.
-Example: If the squad win rate is 0.52 and a player's win rate is 0.60, the adjusted win rate 
-is 0.08 (0.60 - 0.52), meaning the player performs 8% better than the squad average.
-Player Contribution
-Purpose: Measures the player's contribution to the squad's overall performance based on their win
- rate and number of games played.
-Interpretation:
-Higher Contribution: Indicates a more significant impact on the squad's success.
-Example: If a player has a win rate of 0.60 and has played 50 games out of the squad's total 384 games, 
-their contribution is (0.60 * 50) / 384 = 0.0781, meaning they contribute approximately 7.81% to 
-the squad's performance.
-Significance Testing (p-value)
-Purpose: Determines if the player's win rate is significantly different from the squad's 
-overall win rate.
-Interpretation:
-Low p-value (< 0.05): Indicates the difference is statistically significant.
-High p-value (> 0.05): Indicates the difference is not statistically significant.
+*********************************************************
+***** WILSON SCORE INTERVAL - PURPOSE & DESCRIPTION *****
+*********************************************************
+- PURPOSE: Provides a confidence interval for the player's win rate. This provides an estimate of
+           where their true win rate lies, for a given archetype, based on the number of games played.
+- USAGE: Helps identify the reliability and consistency of a player's performance.
+- HOW-TO-INTERPRET:
+    - Lower Bound Score: Represents the minimum win rate we can expect with a 
+                         high degree of confidence. The means it is highly unlikely
+                         the players winrate for an archetype will go below this value.
+    - Highest Lower Bound: When comparing the lower bound score of each player. The highest
+                           lower bound score means their more reliable.
+- EXAMPLE:
+    - If a player has a Wilson score interval of [0.45, 0.70], we are confident that their 
+      true win rate is at a minimum of 45% and is unlikely to go below that.
+****************************************************
+***** ADJUSTED WINRATE - PURPOSE & DESCRIPTION *****
+****************************************************
+- PURPOSE: Adjusts the player's win rate by comparing it to the squad's overall win rate.
+- USAGE: Highlights whether a player is performing above or below the squad average, providing 
+           a relative performance measure.
+- HOW-TO-INTERPRET:
+    - Positive Adjusted Win Rate: Indicates the player performs 
+                                  better than the squad average.
+    - Negative Adjusted Win Rate: Indicates the player performs 
+                                  worse than the squad average.
+- EXAMPLE:
+    - If the squad win rate is 0.52 and a player's win rate is 0.60, the adjusted win rate 
+      is 0.08 (0.60 - 0.52), meaning the player performs 8% better than the squad average.
+*******************************************************
+***** PLAYER CONTRIBUTION - PURPOSE & DESCRIPTION *****
+*******************************************************
+- PURPOSE: Measures the player's contribution to the squad's overall performance based on their win
+           rate and number of games played. 
+- USAGE: Provides insight into the impact of the player's performance on the squad's success.
+- HOW-TO-INTERPRET:
+    - Highest Contribution Score: This indicates a more significant impact on the squad's winrate.
+                                  In other words, a high contribution score could be bad for the 
+                                  squad if their adjusted winrate is negative.
+                                  
+- EXAMPLE:
+    - If a player has a win rate of 0.60 and has played 50 games out of the squad's total 384 games, 
+      their contribution is (0.60 * 50) / 384 = 0.0781, meaning they contribute approximately 7.81% to 
+      the squad's performance when playing that archetype.
+******************************************************************
+***** SIGNIFICANCE TESTING (P-VALUE) - PURPOSE & DESCRIPTION *****
+******************************************************************
+- PURPOSE: Determines if the player's win rate is significantly different from the squad's 
+           overall win rate.
+- USAGE: Helps identify if the player's performance is an outlier or within the expected range.
+- HOW-TO-INTERPRET: 
+    - Low p-value (< 0.05): Indicates the difference is statistically significant.
+    - High p-value (> 0.05): Indicates the difference is not statistically significant.
 Example: A p-value of 0.03 means there is a statistically significant difference between the 
-player's win rate and the squad's win rate.
-Combined Interpretation
-By analyzing these metrics together, you can get a holistic view of each player's performance:
+         player's win rate and the squad's win rate.
+
+
+
+****************COMBINING THESE ANALYSES & INTERPRETING THEM TOGETHER*********************
 
 Reliability and Consistency:
+- Wilson Score:
+    - A high lower bound in the Wilson score interval suggests that we can be confident, for now, 
+      that the player's winrate minimum won't go below that lower bound value.
+    - (IN OTHER OWRDS): A higher lower bound indicates a higher minimum performance level we can 
+      be confident about, while a narrower interval suggests that this estimate is reliable.
 
-A high lower bound in the Wilson score interval suggests the player's performance is reliable 
-and consistent.
-Relative Performance:
+- Adjusted Win Rate:
+    - A positive adjusted win rate indicates the player is performing above the squad average, 
+      providing additional value.
+    - A negative adjusted win rate suggests room for improvement relative to the squad's average.
 
-A positive adjusted win rate indicates the player is performing above the squad average, 
-providing additional value.
-A negative adjusted win rate suggests room for improvement relative to the squad's average.
-Impact on Squad:
+- Player Contribution:
+    - High contribution values indicate significant impact on the squad's success.
+    - Low contribution values may suggest less influence, even if the player has a good win rate, 
+      especially if they played fewer games.
 
-High player contribution values indicate significant impact on the squad's success.
-Low contribution values may suggest less influence, even if the player has a good win rate, 
-especially if they played fewer games.
-Statistical Significance:
+- Statistical Significance:
+    - A low p-value indicates that the player's performance is statistically different from the 
+      squad's average, highlighting exceptional performance (either positive or negative).
 
-A low p-value indicates that the player's performance is statistically different from the 
-squad's average, highlighting exceptional performance (either positive or negative).
-
-********Output and Interpretation***********
+********Output and Interpretation - MAGE ARCHETYPE***********
 Let's calculate and interpret the metrics for each player:
 
+DATE & TIME: 6.11.24 - 5:22pm
+['La Migra Oficial', 0.62, 61, 'PureLunar', 0.54, 199, 'Serandipityyy', 0.49, 136]
+
 La Migra Oficial:
-Win Rate: 0.62
-Games: 61
-Adjusted Win Rate: 0.62 - 0.52 = 0.10
-Contribution: (0.62 * 61) / 384 = 0.0984 (9.84%)
-Wilson Score Interval: Calculated interval (example values) = [0.51, 0.72]
-p-value: Statistically significant value indicating the player's win rate is significantly different from the squad's win rate.
+- Games Played As: 61
+- Win Rate: 0.62
+- Adjusted Win Rate: 0.62 - 0.52 = 0.10
+- Contribution: (0.62 * 61) / 384 = 0.0984 (9.84%)
+- Wilson Score Interval: Calculated interval = [0.51, 0.72]
+- Interval Size: [0.21]
+
 PureLunar:
+- Games Played As: 199
+- Win Rate: 0.54
+- Adjusted Win Rate: 0.54 - 0.52 = 0.02
+- Contribution: (0.54 * 199) / 384 = 0.2797 (27.97%)
+- Wilson Score Interval: Calculated interval = [0.48, 0.60]
+- Interval Size: [0.12]
 
-Win Rate: 0.54
-Games: 199
-Adjusted Win Rate: 0.54 - 0.52 = 0.02
-Contribution: (0.54 * 199) / 384 = 0.2797 (27.97%)
-Wilson Score Interval: Calculated interval (example values) = [0.48, 0.60]
-p-value: Statistically significant value indicating the player's win rate is significantly different from the squad's win rate.
 Serandipityyy:
+- Games Played As: 136
+- Win Rate: 0.49
+- Adjusted Win Rate: 0.49 - 0.52 = -0.03
+- Contribution: (0.49 * 136) / 384 = 0.1737 (17.37%)
+- Wilson Score Interval: Calculated interval = [0.43, 0.55]
+- Interval Size: [0.12]
 
-Win Rate: 0.49
-Games: 136
-Adjusted Win Rate: 0.49 - 0.52 = -0.03
-Contribution: (0.49 * 136) / 384 = 0.1737 (17.37%)
-Wilson Score Interval: Calculated interval (example values) = [0.43, 0.55]
-p-value: Statistically significant value indicating the player's win rate is significantly different from the squad's win rate.
-Summary of Interpretation
+*****INTERPRETATION SUMMARY*****
 La Migra Oficial:
-
-Reliable Performance: High lower bound in the Wilson score interval indicates reliable performance.
-Positive Impact: Positive adjusted win rate and significant contribution indicate a positive impact on the squad's performance.
-Significant Performance: Statistically significant p-value shows that the performance is above average.
+- Non-Reliable Performance: Highest lower bound in the Wilson score interval indicates a high minimum
+                        performance but due to having the largest interval, we can't be confident
+                        that this estimate is reliable.
+- Positive Impact: Highest adjusted win rate but a small contribution score indicates this player is
+                   contributing positively but there aren't enough games as this archetype to provide
+                   proof of a positive contribution in the long run.
 PureLunar:
+- Moderate Reliability: A moderate lower bound in the Wilson score interval indicates a moderate 
+                        performance minimum but due to having the smallest interval, equal to that
+                        of Serandipityyy, we can be relatively confident in this estimate.
+- High/Slightly Positive Contribution: Highest contribution and a positive adjusted winrate suggests a significant, but only
+                                       slightly positive influence on the squad's performance. 
 
-Moderate Reliability: Moderate Wilson score interval indicates consistent performance.
-High Contribution: High contribution suggests significant influence on the squad's success.
-Close to Average Performance: Adjusted win rate close to zero and p-value indicate that the performance is close to the squad average.
 Serandipityyy:
-
-Below Average Performance: Lower adjusted win rate and moderate contribution indicate below-average performance.
-Consistent Performance: Wilson score interval suggests consistency, but the performance is not as strong.
-Statistical Significance: Statistically significant p-value indicates that the performance is below the squad average.
-Conclusion
-From the analysis, La Migra Oficial is the most reliable and impactful player for the "Mage" archetype, with a strong and consistent performance above the squad average. PureLunar has a moderate performance with significant contributions, while Serandipityyy performs below average but consistently. This comprehensive approach allows you to evaluate player performance in various dimensions, providing a clearer picture of their impact on the squad's success.
+- Moderate Reliability: The smallest lower bound in the Wilson score interval indicates the lowest perfomance, but due
+                        to having the smallest interval, equal to that of PureLunar, we can be relatively
+                        confident in this estimate.
+- High/Slightly Negative Contribution: Having the second highest contribution score, plus a very small negative
+                                       adjusted winrate, indicates a fairly large, but slightly negative influence
+                                       on the squad's performance when playing this archetype.
 
 
 

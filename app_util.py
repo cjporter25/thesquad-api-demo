@@ -1,9 +1,16 @@
 import secrets
 import string
 import os
+import re
+import tempfile
+import base64
 import json
 
+import requests
+from requests.auth import HTTPBasicAuth
+
 from thesquad.squad import *
+
 
 def generate_new_key(username):
     characters = string.ascii_uppercase + string.digits
@@ -102,6 +109,62 @@ def clear_firebase_cred():
         outfile.write(json_data)
         outfile.close()
 
+def LOCAL_find_live_client_info():
+    filePath = "C:/Riot Games/League of Legends/lockfile"
+    if os.path.exists(filePath):
+        with open(filePath, 'r') as file:
+            content = file.read().strip()
+        
+        pattern = r'^(.+?):(\d+):(\d+):(.+?):(.+?)$'
+        match = re.match(pattern, content)
+
+        if match:
+            portNum = match.group(3)
+            passWord = match.group(4)
+            return [portNum, passWord]
+        else: 
+            return "File format does not match the expected pattern."
+    else:
+        return "File does not exist"
+
+def LOCAL_get_lcu_data(port, password, certPath):
+
+    #Start it off as false
+    verify_ssl = False
+
+    # Construct the base URL for the LCU API
+    base_url = f"https://127.0.0.1:{port}"
+    print("Base URL: " + base_url)
+
+    # Construct the Authorization header
+    auth_str = f"riot:{password}"
+    auth_bytes = auth_str.encode('ascii')
+    auth_base64 = base64.b64encode(auth_bytes).decode('ascii')
+    headers = {
+        "Authorization": f"Basic {auth_base64}",
+        "Accept": "application/json"
+    }
+    print("Headers: ")
+    print(headers)
+    
+    verify_ssl = certPath
+
+    # Verify SSL (usually required)
+    # verify_ssl = False
+    endpoint = "/lol-champ-select/v1/session"
+
+    try:
+        # Make the request
+        response = requests.get(base_url + endpoint, headers=headers, verify=verify_ssl)
+
+        # Check if the request was successful
+        if response.status_code == 200:
+            return response.json()
+        else:
+            return f"Error: Received status code {response.status_code}"
+
+    except requests.exceptions.RequestException as e:
+        return f"Request failed: {e}"
 # Parses through a theoretical user input memberList and confirms that each
 #   name given and the list as a whole is a valid length.
 def is_mem_list_valid(memberList):

@@ -68,7 +68,7 @@ th {
 
 
 /* Media query for smaller screens */
-@media (max-width: 800px) {
+@media (max-width: 768px) {
     body {
         width: 100%;
     }
@@ -109,7 +109,7 @@ th {
 
     th, td {
         font-size: 2.4vw; /* Increase font size for smaller screens */
-        padding: 12px; /* Increase padding for better touch support */
+        padding: 10px 5px; /* Increase padding for better touch support */
     }
 
 }

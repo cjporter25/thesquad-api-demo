@@ -889,7 +889,8 @@ save_squad_data_to_squad(squad, db):
     converts it to a dict. It then extracts the keys from the dict and converts 
     them to a list and sorts them. 
 - A new dictionary is made with the same key-value pairs but with the keys sorted.
-    The squad in process is then updated with the newly calculated data.
+    The squad in process is then updated with the newly calculated data so that it
+    can be sent to a webpage for viewing or to someone making a call to the API
 
     Parameters:
     param1 (squad obj.): The full squad object reference
