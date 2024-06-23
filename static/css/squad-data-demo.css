@@ -31,6 +31,10 @@ a {
     word-break: break-word;
     overflow-wrap: break-word;
 }
+li {
+    word-wrap: break-word;  /* Allows long words to be broken */
+    white-space: normal;    /* Ensures the text wraps naturally */
+}
 
 table {
     width: 80%;
