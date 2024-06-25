@@ -1,5 +1,19 @@
-***PROCESS USED TO ENCRYPT AND DECRYPT***
+***LEAGUE OF LEGENDS DATA DRAGON***
+- Data Dragon
+    - Support Website:
+        - https://support-developer.riotgames.com/hc/en-us/articles/22698698001939-League-of-Legends
+    - Patch Versions:
+        - https://ddragon.leagueoflegends.com/api/versions.json
+        - Index 0 of the reponse contains the most recent version
+    - Full Champion Data List
+        - https://ddragon.leagueoflegends.com/cdn/[version]/data/en_US/champion.json
+    - Individual Champion List
+        - https://ddragon.leagueoflegends.com/cdn/[version]/data/en_US/champion/Aatrox.json
+    - Item List
+        - https://ddragon.leagueoflegends.com/cdn/[version]/data/en_US/item.json
 
+    
+***PROCESS USED TO ENCRYPT AND DECRYPT***
     new_key1 = ""
     curr_val = 0
     new_val = 0
@@ -23,7 +37,6 @@
             new_val = 45
         new_char = chr(new_val)
         new_key1 += new_char
-    
     new_key2 = ""
     for char in new_key1:
         curr_val = ord(char)

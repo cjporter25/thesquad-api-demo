@@ -194,7 +194,6 @@ Example: A p-value of 0.03 means there is a statistically significant difference
 
 
 ****************COMBINING THESE ANALYSES & INTERPRETING THEM TOGETHER*********************
-
 Reliability and Consistency:
 - Wilson Score:
     - A high lower bound in the Wilson score interval suggests that we can be confident, for now, 

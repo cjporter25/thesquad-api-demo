@@ -10,6 +10,7 @@ views.py
 app_util.txt
 
 mysquad_home.html
+LICENSE
 
 .env
 .flaskenv

@@ -78,14 +78,13 @@ def get_player_info(summonerName):
     }
     return jsonify(player_info), 200
 
-# Usage: www.thesquad-api.com/get-player-info/by-riot-id/<riot_id>/?tagline=<string>
-# Ex: localhost:5000/get-player-info/by-riot-id/Chrispychickn25/?tagline=NA1
+# Usage (ext): www.thesquad-api.com/get-player-info/by-riot-id/<riot_id>/?tagline=<string>
+# Usage (int): localhost:5000/get-player-info/by-riot-id/Chrispychickn25/?tagline=NA1
 @app.route("/get-player-info/by-riot-id/<riot_id>/")
 def get_player_info_riotID(riot_id):
     tagline = request.args.get("tagline", default="NA1", type=str)
     api_url_riot_id = "https://americas.api.riotgames.com/riot/account/v1/accounts/by-riot-id/" + riot_id
     api_url_plus_key = api_url_riot_id + "/" + tagline + '?api_key=' + riot_key
- # EX: "https://americas.api.riotgames.com/riot/account/v1/accounts/by-riot-id/Chrispychickn25/NA1?api_key=...
     request_resp = requests.get(api_url_plus_key)
     summ_info = request_resp.json()
     puuID = summ_info['puuid']

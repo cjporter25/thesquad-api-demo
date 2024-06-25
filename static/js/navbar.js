@@ -5,14 +5,18 @@ document.addEventListener('DOMContentLoaded', function() {
     const contentContainer = document.getElementById('content-container');
 
     buttons.forEach(button => {
-        button.addEventListener('click', function(e) {
+        // "Listen" for and respond to a "click"
+        button.addEventListener('click', function(e) 
+        {
             e.preventDefault();
             const targetId = button.dataset.target;
-
+            
+            // When a Navbar item is clicked, fetch it's specific html file
             fetch(`/static/content/${targetId}.html`)
                 .then(response => {
+                    // If reponse failed, display error message
                     if (!response.ok) {
-                        throw new Error('Network response was not ok');
+                        throw new Error('Error loading content for:', targetId);
                     }
                     return response.text();
                 })
@@ -20,12 +24,14 @@ document.addEventListener('DOMContentLoaded', function() {
                     console.log(`Loaded content for ${targetId}:`, html);
                     contentContainer.innerHTML = html;
 
-                    // Add active class to the loaded content
+                    // Add active class to the loaded content's html so that the appropriate
+                    //  CSS can apply and only render the specified content
                     const loadedContent = contentContainer.querySelector('.content');
                     if (loadedContent) {
                         loadedContent.classList.add('active');
                     }
                 })
+                // Display error if content didn't load correctly.
                 .catch(error => {
                     console.error('Error loading content:', error);
                     contentContainer.innerHTML = '<p>Failed to load content.</p>';

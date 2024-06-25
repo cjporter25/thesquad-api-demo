@@ -31,10 +31,20 @@ from app_util import *
 #       Idea - Build components that check specific elements, similar to the building
 #       algorithm, and then call all of them under one umbrella.
 
-##### WARNING WARNING WARNING - REMOVE THIS BEFORE PUSHING TO HEROKU #####
-KGmatchID = "NA1_4789688057"
-KGpuuID = "k6JM2AMfEJlM9SXmsDSzlc1YM96OzSut42yR1E7XkDTjynBkbdyBO6uAzlLAJjX6fhMg2X6cDKOFxQ"
-KGsquadID = "8I_GBKGGSh_t_aJU"
+# 2MAN LOCAL -->
+    # localhost:5000/retrieve-squad-data/?p0=Chrispychickn25%23NA1&p1=PureLunar%23NA1
+    # localhost:5000/retrieve-squad-data/?p0=PureLunar%23NA1&p1=La%20Migra%20Oficial%236362
+# 3MAN LOCAL --> 
+    # localhost:5000/retrieve-squad-data/?p0=PureLunar%23NA1&p1=La%20Migra%20Oficial%236362&p2=Serandipityyy%23NA1
+    # localhost:5000/retrieve-squad-data/?p0=PureLunar%23NA1&p1=La%20Migra%20Oficial%236362
+    # localhost:5000/retrieve-squad-data/?p0=PureLunar%23NA1&p1=Chrispychickn25%23NA1
+    # localhost:5000/retrieve-squad-data/?p0=La%20Migra%20Oficial%236362&p1=Chrispychickn25%23NA1
+    # localhost:5000/demo/?p0=PureLunar%23NA1&p1=La%20Migra%20Oficial%236362&p2=Serandipityyy%23NA1
+    # localhost:5000/retrieve-squad-data/?p0=Chrispychickn25%23NA1&p1=PureLunar%23NA1&p2=Serandipityyy%23NA1
+    # localhost:5000/demo/?p0=Chrispychickn25%23NA1&p1=PureLunar%23NA1&p2=Serandipityyy%23NA1
+    # localhost:5000/demo/?p0=Chrispychickn25%23NA1&p1=PureLunar%23NA1&p2=La%20Migra%20Oficial%236362
+# 4MAN LOCAL -->
+    # localhost:5000/retrieve-squad-data/?p0=Chrispychickn25%23NA1&p1=PureLunar%23NA1&p2=Serandipityyy%23NA1&p3=La%20Migra%20Oficial%236362
 
 def test_user_input():
     test1 = is_mem_list_valid(NON_VALID_MEM_LIST_1)
@@ -171,7 +181,6 @@ def test_response_rate_limit_exceeded(APIKEY):
     print("     Expected: " + str(RESPONSE_CODE_RATE_LIMIT_EXCEEDED))
     print("     Actual: " + str(response['status']["status_code"]))
     assert response['status']["status_code"] == RESPONSE_CODE_RATE_LIMIT_EXCEEDED, "Unexpected Code"
-
 
 def test_get_match(matchID, apiKey):
     api_url_matchId = "https://americas.api.riotgames.com/lol/match/v5/match" + matchID
